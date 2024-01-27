@@ -49,7 +49,7 @@ func TestNewCombinations(t *testing.T) {
 	})
 }
 
-func TestCombination_IsStraiht(t *testing.T) {
+func TestCombination_isStraiht(t *testing.T) {
 	t.Run("A 2 3 4 5", func(t *testing.T) {
 		cards := []Card {
 			{face: Two, suit: Spades},
@@ -103,5 +103,36 @@ func TestCombination_IsStraiht(t *testing.T) {
 		combination, err := NewCombination(cards)
 		require.NoError(t, err)
 		require.False(t, combination.isStraight())
+	})
+}
+
+func TestCombination_isFlush(t *testing.T) {
+	t.Run("positive", func(t *testing.T) {
+		cards := []Card {
+			{face: Two, suit: Spades},
+			{face: Four, suit: Spades},
+			{face: Five, suit: Spades},
+			{face: Six, suit: Spades},
+			{face: Seven, suit: Spades},
+		}
+
+		combination, err := NewCombination(cards)
+		require.NoError(t, err)
+		require.True(t, combination.isFlush())
+	})
+
+	
+	t.Run("Negative", func(t *testing.T) {
+		cards := []Card {
+			{face: Two, suit: Diamonds},
+			{face: Four, suit: Spades},
+			{face: Five, suit: Spades},
+			{face: Six, suit: Spades},
+			{face: Seven, suit: Spades},
+		}
+
+		combination, err := NewCombination(cards)
+		require.NoError(t, err)
+		require.False(t, combination.isFlush())
 	})
 }
