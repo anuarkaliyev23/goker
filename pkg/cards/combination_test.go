@@ -136,3 +136,189 @@ func TestCombination_isFlush(t *testing.T) {
 		require.False(t, combination.isFlush())
 	})
 }
+
+func TestCombination_isFourOAKind(t *testing.T) {
+	t.Run("positive", func(t *testing.T) {
+		cards := []Card {
+			{face: Two, suit: Spades},
+			{face: Two, suit: Diamonds},
+			{face: Two, suit: Hearts},
+			{face: Two, suit: Clubs},
+			{face: Queen, suit: Spades},
+		}
+
+		combination, err := NewCombination(cards)
+		require.NoError(t, err)
+		require.True(t, combination.isFourOfAKind())
+	})
+
+	
+	t.Run("Negative", func(t *testing.T) {
+		cards := []Card {
+			{face: Two, suit: Spades},
+			{face: Two, suit: Diamonds},
+			{face: Two, suit: Hearts},
+			{face: Three, suit: Clubs},
+			{face: Queen, suit: Spades},
+		}
+
+		combination, err := NewCombination(cards)
+		require.NoError(t, err)
+		require.False(t, combination.isFourOfAKind())
+	})
+}
+
+func TestCombination_isThreeOAKind(t *testing.T) {
+	t.Run("positive", func(t *testing.T) {
+		cards := []Card {
+			{face: Two, suit: Spades},
+			{face: Two, suit: Diamonds},
+			{face: Two, suit: Hearts},
+			{face: Five, suit: Clubs},
+			{face: Queen, suit: Spades},
+		}
+
+		combination, err := NewCombination(cards)
+		require.NoError(t, err)
+		require.True(t, combination.isThreeOfAKind())
+	})
+
+	
+	t.Run("Negative", func(t *testing.T) {
+		cards := []Card {
+			{face: Two, suit: Spades},
+			{face: Two, suit: Diamonds},
+			{face: Five, suit: Hearts},
+			{face: Three, suit: Clubs},
+			{face: Queen, suit: Spades},
+		}
+
+		combination, err := NewCombination(cards)
+		require.NoError(t, err)
+		require.False(t, combination.isThreeOfAKind())
+	})
+}
+
+func TestCombination_isTwoPair(t *testing.T) {
+	t.Run("positive", func(t *testing.T) {
+		cards := []Card {
+			{face: Two, suit: Spades},
+			{face: Two, suit: Diamonds},
+			{face: Five, suit: Hearts},
+			{face: Five, suit: Clubs},
+			{face: Queen, suit: Spades},
+		}
+
+		combination, err := NewCombination(cards)
+		require.NoError(t, err)
+		require.True(t, combination.isTwoPair())
+	})
+
+	
+	t.Run("Negative", func(t *testing.T) {
+		cards := []Card {
+			{face: Two, suit: Spades},
+			{face: Two, suit: Diamonds},
+			{face: Five, suit: Hearts},
+			{face: Three, suit: Clubs},
+			{face: Queen, suit: Spades},
+		}
+
+		combination, err := NewCombination(cards)
+		require.NoError(t, err)
+		require.False(t, combination.isTwoPair())
+	})
+}
+
+func TestCombination_isPair(t *testing.T) {
+	t.Run("positive", func(t *testing.T) {
+		cards := []Card {
+			{face: Two, suit: Spades},
+			{face: Two, suit: Diamonds},
+			{face: Five, suit: Hearts},
+			{face: Seven, suit: Clubs},
+			{face: Queen, suit: Spades},
+		}
+
+		combination, err := NewCombination(cards)
+		require.NoError(t, err)
+		require.True(t, combination.isPair())
+	})
+
+	
+	t.Run("Negative", func(t *testing.T) {
+		cards := []Card {
+			{face: Two, suit: Spades},
+			{face: King, suit: Diamonds},
+			{face: Five, suit: Hearts},
+			{face: Three, suit: Clubs},
+			{face: Queen, suit: Spades},
+		}
+
+		combination, err := NewCombination(cards)
+		require.NoError(t, err)
+		require.False(t, combination.isPair())
+	})
+}
+
+func TestCombination_isFullHouse(t *testing.T) {
+	t.Run("positive", func(t *testing.T) {
+		cards := []Card {
+			{face: Two, suit: Spades},
+			{face: Two, suit: Diamonds},
+			{face: Five, suit: Hearts},
+			{face: Five, suit: Clubs},
+			{face: Five, suit: Spades},
+		}
+
+		combination, err := NewCombination(cards)
+		require.NoError(t, err)
+		require.True(t, combination.isFullHouse())
+	})
+
+	
+	t.Run("Negative", func(t *testing.T) {
+		cards := []Card {
+			{face: Two, suit: Spades},
+			{face: Three, suit: Diamonds},
+			{face: Three, suit: Hearts},
+			{face: Three, suit: Clubs},
+			{face: Queen, suit: Spades},
+		}
+
+		combination, err := NewCombination(cards)
+		require.NoError(t, err)
+		require.False(t, combination.isFullHouse())
+	})
+}
+
+func TestCombination_isHighCard(t *testing.T) {
+	t.Run("Negative", func(t *testing.T) {
+		cards := []Card {
+			{face: Two, suit: Spades},
+			{face: Two, suit: Diamonds},
+			{face: Five, suit: Hearts},
+			{face: Five, suit: Clubs},
+			{face: Five, suit: Spades},
+		}
+
+		combination, err := NewCombination(cards)
+		require.NoError(t, err)
+		require.False(t, combination.isHighCard())
+	})
+
+	
+	t.Run("Positive", func(t *testing.T) {
+		cards := []Card {
+			{face: Two, suit: Spades},
+			{face: King, suit: Diamonds},
+			{face: Ace, suit: Hearts},
+			{face: Ten, suit: Clubs},
+			{face: Queen, suit: Spades},
+		}
+
+		combination, err := NewCombination(cards)
+		require.NoError(t, err)
+		require.True(t, combination.isHighCard())
+	})
+}

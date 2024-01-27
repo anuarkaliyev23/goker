@@ -102,6 +102,49 @@ func isStraightNoAce(cards []Card) bool {
 	return len(uniques) == len(cards) && sum == validStraightSum
 }
 
+func (r Combination) isFourOfAKind() bool {
+	toFaceCounts := r.toFaceCounts()
+	return lo.Contains(toFaceCounts, 4)
+}
+
+func (r Combination) isThreeOfAKind() bool {
+	toFaceCounts := r.toFaceCounts()	
+	return lo.Contains(toFaceCounts, 3)
+}
+
+func (r Combination) isTwoPair() bool {
+	toFaceCounts := r.toFaceCounts()
+	return lo.Count(toFaceCounts, 2) == 2 * 2
+}
+
+func (r Combination) isPair() bool {
+	toFaceCounts := r.toFaceCounts()
+	return lo.Count(toFaceCounts, 2) == 2
+}
+
+func (r Combination) isFullHouse() bool {
+	toFaceCounts := r.toFaceCounts()
+	return lo.Count(toFaceCounts, 3) == 3 && lo.Count(toFaceCounts, 2) == 2
+}
+
+func (r Combination) isHighCard() bool {
+	return !r.isStraight() && !r.isFlush() && !r.isFourOfAKind() && !r.isThreeOfAKind() && !r.isFullHouse() && !r.isTwoPair() && !r.isPair()
+}
+
+func (r Combination) toFaces() []Face {
+	return lo.Map(r.cards, func(card Card, index int) Face {
+		return card.Face()
+	})
+}
+
+func (r Combination) toFaceCounts() []int {
+	faces := r.toFaces()
+	toCount := lo.Map(faces, func(face Face, index int) int {
+		return lo.Count(faces, face)
+	})
+	return toCount
+}
+
 func NewCombination(cards []Card) (*Combination, error) {
 	if len(cards) == validCardsLength {
 		uniques := lo.Uniq(cards)
