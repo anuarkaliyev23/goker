@@ -8,25 +8,45 @@ import (
 	"github.com/samber/lo"
 )
 
-type combinationType int
+type CombinationType int
 
 const validCardsLength = 5
 const validStraightSum = 10
 
 const (
-	typeHighCard combinationType = iota
-	typePair
-	typeTwoPair
-	typeThreeOfAKind
-	typeStraight
-	typeFlush
-	typeFullHouse
-	typeFourOfAKind
-	typeStraghtFlush
+	HighCard CombinationType = iota
+	Pair
+	TwoPair
+	ThreeOfAKind
+	Straight
+	Flush
+	FullHouse
+	FourOfAKind
+	StraghtFlush
 )
 
 type Combination struct {
 	cards []Card
+}
+
+func (r Combination) Type() CombinationType {
+	if r.isStraightFlush() {
+		return StraghtFlush
+	} else if r.isFourOfAKind() {
+		return FourOfAKind
+	} else if r.isFlush() {
+		return Flush
+	} else if r.isStraight() {
+		return Straight
+	} else if r.isThreeOfAKind() {
+		return ThreeOfAKind
+	} else if r.isTwoPair() {
+		return TwoPair
+	} else if r.isPair() {
+		return Pair
+	} else {
+		return HighCard
+	}
 }
 
 func (r Combination) isFlush() bool {
