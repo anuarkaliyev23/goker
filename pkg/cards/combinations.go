@@ -101,9 +101,23 @@ func (r Combination) MainCard() Face {
 
 	if len(cardsDuplicatesByFace) == 1 {
 		return cardsDuplicatesByFace[0].Face()	
+	} else if r.Type() != FullHouse {
+		sort.Sort(ByFaceReversed(cardsDuplicatesByFace))
+		return cardsDuplicatesByFace[0].Face()
 	} else {
-		sort.Sort(ByFace(cardsDuplicatesByFace))
-		return cardsDuplicatesByFace[len(cardsDuplicatesByFace) - 1].Face()
+		uniques := lo.FindDuplicatesBy(r.cards, func(card Card) Face {
+			return card.Face()
+		})
+
+		firstCount := lo.CountBy(r.cards, func(card Card) bool {
+			return card.Face() == uniques[0].Face()
+		})
+
+		if firstCount == 3 {
+			return uniques[0].Face()
+		} else {
+			return uniques[1].Face()
+		}
 	}
 }
 
