@@ -1410,7 +1410,7 @@ func TestLessByKickers(t *testing.T) {
 	})
 
 	t.Run("Three Of A Kind", func(t *testing.T) {
-		t.Run("88862 vs 88863", func(t *testing.T) {
+		t.Run("88863 vs 88862", func(t *testing.T) {
 			more := Combination { 
 				cards: []Card {
 					{face: Eight, suit: Hearts},
@@ -1418,6 +1418,34 @@ func TestLessByKickers(t *testing.T) {
 					{face: Eight, suit: Spades},
 					{face: Six, suit: Clubs},
 					{face: Three, suit: Spades},
+				},
+			}
+
+			less := Combination { 
+				cards: []Card {
+					{face: Eight, suit: Hearts},
+					{face: Eight, suit: Diamonds},
+					{face: Eight, suit: Spades},
+					{face: Six, suit: Clubs},
+					{face: Two, suit: Spades},
+				},
+			}
+
+			moreLess := lessByKickers([]Combination {more, less})
+			lessMore := lessByKickers([]Combination {less, more})
+			require.Equal(t, false, moreLess)
+			require.Equal(t, true, lessMore)
+
+		})
+
+		t.Run("88872 vs 88862", func(t *testing.T) {
+			more := Combination { 
+				cards: []Card {
+					{face: Eight, suit: Hearts},
+					{face: Eight, suit: Diamonds},
+					{face: Eight, suit: Spades},
+					{face: Seven, suit: Clubs},
+					{face: Two, suit: Spades},
 				},
 			}
 
