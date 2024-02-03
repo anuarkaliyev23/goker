@@ -322,3 +322,292 @@ func TestCombination_isHighCard(t *testing.T) {
 		require.True(t, combination.isHighCard())
 	})
 }
+
+func TestCombination_Type(t *testing.T) {
+	t.Run("positive", func(t *testing.T) {
+		highCard := Combination { 
+			cards: []Card {
+				{face: Two, suit: Spades},
+				{face: King, suit: Diamonds},
+				{face: Ace, suit: Hearts},
+				{face: Ten, suit: Clubs},
+				{face: Queen, suit: Spades},
+			},
+		}
+		
+		pair := Combination {
+			cards: []Card {
+				{face: Two, suit: Spades},
+				{face: King, suit: Diamonds},
+				{face: King, suit: Hearts},
+				{face: Ten, suit: Clubs},
+				{face: Queen, suit: Spades},
+			},
+		}
+		
+		twoPair := Combination {
+			cards: []Card {
+				{face: Two, suit: Spades},
+				{face: King, suit: Diamonds},
+				{face: King, suit: Hearts},
+				{face: Ten, suit: Clubs},
+				{face: Ten, suit: Spades},
+			},
+		}
+
+		threeOfAKind := Combination {
+			cards: []Card {
+				{face: Two, suit: Spades},
+				{face: King, suit: Diamonds},
+				{face: King, suit: Hearts},
+				{face: King, suit: Clubs},
+				{face: Ten, suit: Spades},
+			},
+		}
+
+		straight := Combination {
+			cards: []Card {
+				{face: Two, suit: Spades},
+				{face: Three, suit: Diamonds},
+				{face: Four, suit: Hearts},
+				{face: Five, suit: Clubs},
+				{face: Six, suit: Spades},
+			},
+		}
+
+		flush := Combination {
+			cards: []Card {
+				{face: Two, suit: Spades},
+				{face: Seven, suit: Spades},
+				{face: Four, suit: Spades},
+				{face: Five, suit: Spades},
+				{face: Six, suit: Spades},
+			},
+		}
+
+		fullHouse := Combination {
+			cards: []Card {
+				{face: Two, suit: Spades},
+				{face: King, suit: Diamonds},
+				{face: King, suit: Hearts},
+				{face: King, suit: Clubs},
+				{face: Two, suit: Clubs},
+			},
+		}
+
+		fourOfAKind := Combination {
+			cards: []Card {
+				{face: Two, suit: Spades},
+				{face: King, suit: Diamonds},
+				{face: King, suit: Hearts},
+				{face: King, suit: Clubs},
+				{face: King, suit: Clubs},
+			},
+		}
+
+		straightFlush := Combination {
+			cards: []Card {
+				{face: Two, suit: Spades},
+				{face: Three, suit: Spades},
+				{face: Four, suit: Spades},
+				{face: Five, suit: Spades},
+				{face: Six, suit: Spades},
+			},
+		}
+
+		require.Equal(t, highCard.Type(), HighCard)
+		require.Equal(t, pair.Type(), Pair)
+		require.Equal(t, twoPair.Type(), TwoPair)
+		require.Equal(t, threeOfAKind.Type(), ThreeOfAKind)
+		require.Equal(t, straight.Type(), Straight)
+		require.Equal(t, flush.Type(), Flush)
+		require.Equal(t, fullHouse.Type(), FullHouse)
+		require.Equal(t, fourOfAKind.Type(), FourOfAKind)
+		require.Equal(t, straightFlush.Type(), StraghtFlush)
+	})
+}
+
+func TestCombination_Less(t *testing.T) {
+	t.Run("combination order", func (t *testing.T) {
+		highCard := Combination { 
+			cards: []Card {
+				{face: Two, suit: Spades},
+				{face: King, suit: Diamonds},
+				{face: Ace, suit: Hearts},
+				{face: Ten, suit: Clubs},
+				{face: Queen, suit: Spades},
+			},
+		}
+		
+		pair := Combination {
+			cards: []Card {
+				{face: Two, suit: Spades},
+				{face: King, suit: Diamonds},
+				{face: King, suit: Hearts},
+				{face: Ten, suit: Clubs},
+				{face: Queen, suit: Spades},
+			},
+		}
+		
+		twoPair := Combination {
+			cards: []Card {
+				{face: Two, suit: Spades},
+				{face: King, suit: Diamonds},
+				{face: King, suit: Hearts},
+				{face: Ten, suit: Clubs},
+				{face: Ten, suit: Spades},
+			},
+		}
+
+		threeOfAKind := Combination {
+			cards: []Card {
+				{face: Two, suit: Spades},
+				{face: King, suit: Diamonds},
+				{face: King, suit: Hearts},
+				{face: King, suit: Clubs},
+				{face: Ten, suit: Spades},
+			},
+		}
+
+		straight := Combination {
+			cards: []Card {
+				{face: Two, suit: Spades},
+				{face: Three, suit: Diamonds},
+				{face: Four, suit: Hearts},
+				{face: Five, suit: Clubs},
+				{face: Six, suit: Spades},
+			},
+		}
+
+		flush := Combination {
+			cards: []Card {
+				{face: Two, suit: Spades},
+				{face: Seven, suit: Spades},
+				{face: Four, suit: Spades},
+				{face: Five, suit: Spades},
+				{face: Six, suit: Spades},
+			},
+		}
+
+		fullHouse := Combination {
+			cards: []Card {
+				{face: Two, suit: Spades},
+				{face: King, suit: Diamonds},
+				{face: King, suit: Hearts},
+				{face: King, suit: Clubs},
+				{face: Two, suit: Clubs},
+			},
+		}
+
+		fourOfAKind := Combination {
+			cards: []Card {
+				{face: Two, suit: Spades},
+				{face: King, suit: Diamonds},
+				{face: King, suit: Hearts},
+				{face: King, suit: Clubs},
+				{face: King, suit: Clubs},
+			},
+		}
+
+		straightFlush := Combination {
+			cards: []Card {
+				{face: Two, suit: Spades},
+				{face: Three, suit: Spades},
+				{face: Four, suit: Spades},
+				{face: Five, suit: Spades},
+				{face: Six, suit: Spades},
+			},
+		}
+
+		require.False(t, highCard.Less(highCard))
+		require.False(t, pair.Less(pair))
+		require.False(t, twoPair.Less(twoPair))
+		require.False(t, threeOfAKind.Less(threeOfAKind))
+		require.False(t, straight.Less(straight))
+		require.False(t, flush.Less(flush))
+		require.False(t, fullHouse.Less(fullHouse))
+		require.False(t, fourOfAKind.Less(fourOfAKind))
+		require.False(t, straightFlush.Less(straightFlush))
+
+		require.True(t, highCard.Less(pair))
+		require.True(t, highCard.Less(twoPair))
+		require.True(t, highCard.Less(threeOfAKind))
+		require.True(t, highCard.Less(straight))
+		require.True(t, highCard.Less(flush))
+		require.True(t, highCard.Less(fullHouse))
+		require.True(t, highCard.Less(fourOfAKind))
+		require.True(t, highCard.Less(straightFlush))
+
+		require.False(t, pair.Less(highCard))
+		require.True(t, pair.Less(threeOfAKind))
+		require.True(t, pair.Less(straight))
+		require.True(t, pair.Less(flush))
+		require.True(t, pair.Less(fullHouse))
+		require.True(t, pair.Less(fourOfAKind))
+		require.True(t, pair.Less(straightFlush))
+
+		require.False(t, twoPair.Less(highCard))
+		require.False(t, twoPair.Less(pair))
+		require.True(t, twoPair.Less(threeOfAKind))
+		require.True(t, twoPair.Less(straight))
+		require.True(t, twoPair.Less(flush))
+		require.True(t, twoPair.Less(fullHouse))
+		require.True(t, twoPair.Less(fourOfAKind))
+		require.True(t, twoPair.Less(straightFlush))
+
+
+		require.False(t, threeOfAKind.Less(highCard))
+		require.False(t, threeOfAKind.Less(pair))
+		require.False(t, threeOfAKind.Less(twoPair))
+		require.True(t, threeOfAKind.Less(straight))
+		require.True(t, threeOfAKind.Less(flush))
+		require.True(t, threeOfAKind.Less(fullHouse))
+		require.True(t, threeOfAKind.Less(fourOfAKind))
+		require.True(t, threeOfAKind.Less(straightFlush))
+
+		require.False(t, straight.Less(highCard))
+		require.False(t, straight.Less(pair))
+		require.False(t, straight.Less(twoPair))
+		require.False(t, straight.Less(threeOfAKind))
+		require.True(t, straight.Less(flush))
+		require.True(t, straight.Less(fullHouse))
+		require.True(t, straight.Less(fourOfAKind))
+		require.True(t, straight.Less(straightFlush))
+
+		require.False(t, flush.Less(highCard))
+		require.False(t, flush.Less(pair))
+		require.False(t, flush.Less(twoPair))
+		require.False(t, flush.Less(threeOfAKind))
+		require.False(t, flush.Less(straight))
+		require.True(t, flush.Less(fullHouse))
+		require.True(t, flush.Less(fourOfAKind))
+		require.True(t, flush.Less(straightFlush))
+
+		require.False(t, fullHouse.Less(highCard))
+		require.False(t, fullHouse.Less(pair))
+		require.False(t, fullHouse.Less(twoPair))
+		require.False(t, fullHouse.Less(threeOfAKind))
+		require.False(t, fullHouse.Less(straight))
+		require.False(t, fullHouse.Less(flush))
+		require.True(t, fullHouse.Less(fourOfAKind))
+		require.True(t, fullHouse.Less(straightFlush))
+
+		require.False(t, fourOfAKind.Less(highCard))
+		require.False(t, fourOfAKind.Less(pair))
+		require.False(t, fourOfAKind.Less(twoPair))
+		require.False(t, fourOfAKind.Less(threeOfAKind))
+		require.False(t, fourOfAKind.Less(straight))
+		require.False(t, fourOfAKind.Less(flush))
+		require.False(t, fourOfAKind.Less(fullHouse))
+		require.True(t, fourOfAKind.Less(straightFlush))
+		
+		require.False(t, straightFlush.Less(highCard))
+		require.False(t, straightFlush.Less(pair))
+		require.False(t, straightFlush.Less(twoPair))
+		require.False(t, straightFlush.Less(threeOfAKind))
+		require.False(t, straightFlush.Less(straight))
+		require.False(t, straightFlush.Less(flush))
+		require.False(t, straightFlush.Less(fullHouse))
+		require.False(t, straightFlush.Less(fourOfAKind))
+	})
+}

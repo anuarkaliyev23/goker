@@ -1,6 +1,5 @@
 package cards
 
-
 // sort.Interface implementation for handy sorting
 type ByFace []Card
 
@@ -15,3 +14,4 @@ func (r ByFace) Less(i, j int) bool {
 func (r ByFace) Swap(i, j int) {
 	r[i], r[j] = r[j], r[i]
 }
+
