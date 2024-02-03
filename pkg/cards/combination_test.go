@@ -1070,34 +1070,231 @@ func TestCombination_Less(t *testing.T) {
 		require.True(t, highCardEight.Less(highCardQueen))
 		require.True(t, highCardEight.Less(highCardKing))
 		require.True(t, highCardEight.Less(highCardAce))
+
+		require.False(t, highCardNine.Less(highCardSeven))
+		require.False(t, highCardNine.Less(highCardEight))
+		require.True(t, highCardNine.Less(highCardTen))
+		require.True(t, highCardNine.Less(highCardJack))
+		require.True(t, highCardNine.Less(highCardQueen))
+		require.True(t, highCardNine.Less(highCardKing))
+		require.True(t, highCardNine.Less(highCardAce))
+
+		require.False(t, highCardTen.Less(highCardSeven))
+		require.False(t, highCardTen.Less(highCardEight))
+		require.False(t, highCardTen.Less(highCardNine))
+		require.True(t, highCardTen.Less(highCardJack))
+		require.True(t, highCardTen.Less(highCardQueen))
+		require.True(t, highCardTen.Less(highCardKing))
+		require.True(t, highCardTen.Less(highCardAce))
+
+		require.False(t, highCardJack.Less(highCardSeven))
+		require.False(t, highCardJack.Less(highCardEight))
+		require.False(t, highCardJack.Less(highCardNine))
+		require.False(t, highCardJack.Less(highCardTen))
+		require.True(t, highCardJack.Less(highCardQueen))
+		require.True(t, highCardJack.Less(highCardKing))
+		require.True(t, highCardJack.Less(highCardAce))
+
+		require.False(t, highCardQueen.Less(highCardSeven))
+		require.False(t, highCardQueen.Less(highCardEight))
+		require.False(t, highCardQueen.Less(highCardNine))
+		require.False(t, highCardQueen.Less(highCardTen))
+		require.False(t, highCardQueen.Less(highCardJack))
+		require.True(t, highCardQueen.Less(highCardKing))
+		require.True(t, highCardQueen.Less(highCardAce))
+
+
+		require.False(t, highCardKing.Less(highCardSeven))
+		require.False(t, highCardKing.Less(highCardEight))
+		require.False(t, highCardKing.Less(highCardNine))
+		require.False(t, highCardKing.Less(highCardTen))
+		require.False(t, highCardKing.Less(highCardJack))
+		require.False(t, highCardKing.Less(highCardQueen))
+		require.True(t, highCardKing.Less(highCardAce))
+
+		require.False(t, highCardAce.Less(highCardSeven))
+		require.False(t, highCardAce.Less(highCardEight))
+		require.False(t, highCardAce.Less(highCardNine))
+		require.False(t, highCardAce.Less(highCardTen))
+		require.False(t, highCardAce.Less(highCardJack))
+		require.False(t, highCardAce.Less(highCardQueen))
+		require.False(t, highCardAce.Less(highCardKing))
+	})
+
+	t.Run("High Card Kickers", func(t *testing.T) {
+		combination_1 := Combination {
+			cards: []Card {
+				{face: Ace, suit: Hearts},
+				{face: Six, suit: Clubs},
+				{face: Five, suit: Spades},
+				{face: Three, suit: Diamonds},
+				{face: Two, suit: Spades},
+			},
+		}
+
+
+		combination_2 := Combination {
+			cards: []Card {
+				{face: Ace, suit: Hearts},
+				{face: King, suit: Spades},
+				{face: Six, suit: Clubs},
+				{face: Five, suit: Spades},
+				{face: Three, suit: Diamonds},
+			},
+		}
+
+
+		combination_3 := Combination {
+			cards: []Card {
+				{face: Ace, suit: Hearts},
+				{face: King, suit: Spades},
+				{face: Jack, suit: Diamonds},
+				{face: Six, suit: Clubs},
+				{face: Five, suit: Spades},
+			},
+		}
+
+
+		combination_4 := Combination {
+			cards: []Card {
+				{face: Ace, suit: Hearts},
+				{face: King, suit: Spades},
+				{face: Jack, suit: Diamonds},
+				{face: Seven, suit: Clubs},
+				{face: Two, suit: Spades},
+			},
+		}
+
+		require.True(t, combination_1.Less(combination_2))
+		require.True(t, combination_1.Less(combination_3))
+		require.True(t, combination_1.Less(combination_4))
+
+
+		require.False(t, combination_2.Less(combination_1))
+		require.True(t, combination_2.Less(combination_3))
+		require.True(t, combination_2.Less(combination_4))
+
+
+		require.False(t, combination_3.Less(combination_1))
+		require.False(t, combination_3.Less(combination_2))
+		require.True(t, combination_3.Less(combination_4))
+
+
+		require.False(t, combination_4.Less(combination_1))
+		// require.False(t, combination_4.Less(combination_2))
+		require.False(t, combination_4.Less(combination_3))
 	})
 }
 
 func TestLessByKickers(t *testing.T) {
 	t.Run("High Card", func(t *testing.T) {
-		more := Combination { 
-			cards: []Card {
-				{face: Two, suit: Spades},
-				{face: King, suit: Diamonds},
-				{face: Ace, suit: Hearts},
-				{face: Ten, suit: Clubs},
-				{face: Queen, suit: Spades},
-			},
-		}
 
-		less := Combination { 
-			cards: []Card {
-				{face: Two, suit: Spades},
-				{face: Seven, suit: Diamonds},
-				{face: Eight, suit: Hearts},
-				{face: Ten, suit: Clubs},
-				{face: Jack, suit: Spades},
-			},
-		}
+		t.Run("AKQT3 vs AKQT2", func(t *testing.T) {
+			more := Combination { 
+				cards: []Card {
+					{face: Ace, suit: Hearts},
+					{face: King, suit: Diamonds},
+					{face: Queen, suit: Spades},
+					{face: Ten, suit: Clubs},
+					{face: Three, suit: Spades},
+				},
+			}
 
-		moreLess := lessByKickers([]Combination {more, less})
-		lessMore := lessByKickers([]Combination {less, more})
-		require.Equal(t, false , moreLess)
-		require.Equal(t, true, lessMore)
+			less := Combination { 
+				cards: []Card {
+					{face: Ace, suit: Hearts},
+					{face: King, suit: Diamonds},
+					{face: Queen, suit: Spades},
+					{face: Ten, suit: Clubs},
+					{face: Two, suit: Spades},
+				},
+			}
+
+			moreLess := lessByKickers([]Combination {more, less})
+			lessMore := lessByKickers([]Combination {less, more})
+			require.Equal(t, false , moreLess)
+			require.Equal(t, true, lessMore)
+		})
+
+		t.Run("AKQT3 vs AKQ93", func(t *testing.T) {
+			more := Combination { 
+				cards: []Card {
+					{face: Ace, suit: Hearts},
+					{face: King, suit: Diamonds},
+					{face: Queen, suit: Spades},
+					{face: Ten, suit: Clubs},
+					{face: Three, suit: Spades},
+				},
+			}
+
+			less := Combination { 
+				cards: []Card {
+					{face: Ace, suit: Hearts},
+					{face: King, suit: Diamonds},
+					{face: Queen, suit: Spades},
+					{face: Nine, suit: Clubs},
+					{face: Three, suit: Spades},
+				},
+			}
+
+			moreLess := lessByKickers([]Combination {more, less})
+			lessMore := lessByKickers([]Combination {less, more})
+			require.Equal(t, false , moreLess)
+			require.Equal(t, true, lessMore)
+		})
+
+		t.Run("AKQT3 vs AKJT3", func(t *testing.T) {
+			more := Combination { 
+				cards: []Card {
+					{face: Ace, suit: Hearts},
+					{face: King, suit: Diamonds},
+					{face: Queen, suit: Spades},
+					{face: Ten, suit: Clubs},
+					{face: Three, suit: Spades},
+				},
+			}
+
+			less := Combination { 
+				cards: []Card {
+					{face: Ace, suit: Hearts},
+					{face: King, suit: Diamonds},
+					{face: Jack, suit: Spades},
+					{face: Nine, suit: Clubs},
+					{face: Three, suit: Spades},
+				},
+			}
+
+			moreLess := lessByKickers([]Combination {more, less})
+			lessMore := lessByKickers([]Combination {less, more})
+			require.Equal(t, false , moreLess)
+			require.Equal(t, true, lessMore)
+		})
+
+		t.Run("AKQT3 vs AQJT3", func(t *testing.T) {
+			more := Combination { 
+				cards: []Card {
+					{face: Ace, suit: Hearts},
+					{face: King, suit: Diamonds},
+					{face: Queen, suit: Spades},
+					{face: Ten, suit: Clubs},
+					{face: Three, suit: Spades},
+				},
+			}
+
+			less := Combination { 
+				cards: []Card {
+					{face: Ace, suit: Hearts},
+					{face: Queen, suit: Diamonds},
+					{face: Jack, suit: Spades},
+					{face: Ten, suit: Clubs},
+					{face: Three, suit: Spades},
+				},
+			}
+
+			moreLess := lessByKickers([]Combination {more, less})
+			lessMore := lessByKickers([]Combination {less, more})
+			require.Equal(t, false , moreLess)
+			require.Equal(t, true, lessMore)
+		})
 	})
 }

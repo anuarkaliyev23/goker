@@ -257,12 +257,22 @@ func (r Combination) Less(other Combination) bool {
 	if r.Type() < other.Type() {
 		return true
 	} else if r.Type() == other.Type() {
-		if comparedByHighestCard(r.Type()) {
-			return lessByHighestCard(combinations)
-		} else if comparedBySecondary(r.Type()) {
-			return lessBySecondary(combinations)
-		} else if comparedByKickers(r.Type()) {
-			return lessByKickers(combinations)
+		if r.MainCard() < other.MainCard() {
+			return true
+		} else if r.MainCard() == other.MainCard() {
+			if comparedBySecondary(r.Type()) {
+				if *r.SecondaryCard() < *other.SecondaryCard() {
+					return true
+				} else if *r.SecondaryCard() == *other.SecondaryCard() {
+					if comparedByKickers(r.Type()) {
+						return lessByKickers(combinations)
+					} else {
+						return false
+					}
+				}
+			} else if comparedByKickers(r.Type()) {
+				return lessByKickers(combinations)
+			}
 		}
 	}
 
@@ -310,10 +320,11 @@ func lessByKickers(combinations []Combination) bool {
 		opposite := second[index]
 		if int(face) < int(opposite) {
 			return true
+		} else if int(face) > int(opposite) {
+			return false
 		}
 	}
 	return false
-
 }
 
 
