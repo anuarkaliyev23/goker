@@ -6,6 +6,368 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+
+
+func TestCombination_Kickers(t *testing.T) {
+	t.Run("High Card Kickers", func(t *testing.T) {
+		combination := Combination {
+			cards: []Card{
+				{face: Two, suit: Spades},
+				{face: Seven, suit: Diamonds},
+				{face: Three, suit: Clubs},
+				{face: King, suit: Clubs},
+				{face: Ten, suit: Spades},
+			},
+		}
+
+		kickers := combination.Kickers()
+
+		require.Equal(t, kickers, []Card{
+			{face: Ten, suit: Spades},
+			{face: Seven, suit: Diamonds},
+			{face: Three, suit: Clubs},
+			{face: Two, suit: Spades},
+		})
+	})
+	
+	t.Run("Pair Kickers", func(t *testing.T) {
+		combination := Combination {
+			cards: []Card{
+				{face: Two, suit: Spades},
+				{face: Two, suit: Diamonds},
+				{face: Three, suit: Clubs},
+				{face: King, suit: Clubs},
+				{face: Ten, suit: Spades},
+			},
+		}
+
+		kickers := combination.Kickers()
+
+		require.Equal(t, kickers, []Card{
+			{face: King, suit: Clubs}, 
+			{face: Ten, suit: Spades},
+			{face: Three, suit: Clubs},
+		})
+	})
+
+	t.Run("Two Pair Kickers", func(t *testing.T) {
+		combination := Combination {
+			cards: []Card{
+				{face: Two, suit: Spades},
+				{face: Two, suit: Diamonds},
+				{face: Three, suit: Clubs},
+				{face: King, suit: Clubs},
+				{face: King, suit: Spades},
+			},
+		}
+
+		kickers := combination.Kickers()
+
+		require.Equal(t, kickers, []Card{
+			{face: Three, suit: Clubs},
+		})
+	})
+	
+	t.Run("Three Of A Kind Kickers", func(t *testing.T) {
+		combination := Combination {
+			cards: []Card{
+				{face: Two, suit: Spades},
+				{face: Two, suit: Diamonds},
+				{face: Two, suit: Clubs},
+				{face: Queen, suit: Clubs},
+				{face: King, suit: Spades},
+			},
+		}
+
+		kickers := combination.Kickers()
+		require.Equal(t, kickers, []Card{
+			{face: King, suit: Spades},
+			{face: Queen, suit: Clubs},
+		})
+	})
+
+	t.Run("Four Of A Kind Kickers", func(t *testing.T) {
+		combination := Combination {
+			cards: []Card{
+				{face: Two, suit: Spades},
+				{face: Two, suit: Diamonds},
+				{face: Two, suit: Clubs},
+				{face: Two, suit: Hearts},
+				{face: King, suit: Spades},
+			},
+		}
+
+		kickers := combination.Kickers()
+		require.Equal(t, kickers, []Card{
+			{face: King, suit: Spades},
+		})
+	})
+
+	t.Run("Flush Kickers", func(t *testing.T) {
+		combination := Combination {
+			cards: []Card{
+				{face: Two, suit: Spades},
+				{face: Three, suit: Spades},
+				{face: Queen, suit: Spades},
+				{face: Seven, suit: Spades},
+				{face: King, suit: Spades},
+			},
+		}
+
+		kickers := combination.Kickers()
+		require.Equal(t, kickers, []Card{
+			{face: Queen, suit: Spades},
+			{face: Seven, suit: Spades},
+			{face: Three, suit: Spades},
+			{face: Two, suit: Spades},
+		})
+	})
+}
+
+func TestCombination_MainCombinationCard(t *testing.T) {
+	t.Run("High Card", func(t *testing.T) {
+		combination := Combination {
+			cards: []Card{
+				{face: Two, suit: Spades},
+				{face: Seven, suit: Diamonds},
+				{face: Three, suit: Clubs},
+				{face: King, suit: Clubs},
+				{face: Ten, suit: Spades},
+			},
+		}
+
+		require.Equal(t, King, combination.MainCard())
+	})
+
+	t.Run("Pair", func(t *testing.T) {
+		combination := Combination {
+			cards: []Card{
+				{face: Two, suit: Spades},
+				{face: Seven, suit: Diamonds},
+				{face: Three, suit: Clubs},
+				{face: King, suit: Clubs},
+				{face: King, suit: Spades},
+			},
+		}
+
+		require.Equal(t, King, combination.MainCard())
+	})
+
+	t.Run("Two Pair", func(t *testing.T) {
+		combination := Combination {
+			cards: []Card{
+				{face: Two, suit: Spades},
+				{face: Two, suit: Diamonds},
+				{face: Three, suit: Clubs},
+				{face: King, suit: Clubs},
+				{face: King, suit: Spades},
+			},
+		}
+
+		require.Equal(t, King, combination.MainCard())
+	})
+
+	t.Run("Three Of A Kind", func(t *testing.T) {
+		combination := Combination {
+			cards: []Card{
+				{face: Two, suit: Spades},
+				{face: Two, suit: Diamonds},
+				{face: Two, suit: Clubs},
+				{face: Queen, suit: Clubs},
+				{face: King, suit: Spades},
+			},
+		}
+
+		require.Equal(t, Two, combination.MainCard())
+	})
+
+	t.Run("Straight", func(t *testing.T) {
+		combination := Combination {
+			cards: []Card{
+				{face: Three, suit: Spades},
+				{face: Four, suit: Diamonds},
+				{face: Five, suit: Clubs},
+				{face: Six, suit: Clubs},
+				{face: Seven, suit: Spades},
+			},
+		}
+
+		require.Equal(t, Seven, combination.MainCard())
+	})
+
+	t.Run("Flush", func(t *testing.T) {
+		combination := Combination {
+			cards: []Card{
+				{face: Two, suit: Spades},
+				{face: Three, suit: Spades},
+				{face: Queen, suit: Spades},
+				{face: Seven, suit: Spades},
+				{face: King, suit: Spades},
+			},
+		}
+
+		require.Equal(t, King, combination.MainCard())
+	})
+
+	t.Run("Full House", func(t *testing.T) {
+		combination := Combination {
+			cards: []Card{
+				{face: Two, suit: Spades},
+				{face: Two, suit: Diamonds},
+				{face: Two, suit: Clubs},
+				{face: King, suit: Clubs},
+				{face: King, suit: Spades},
+			},
+		}
+
+		require.Equal(t, Two, combination.MainCard())
+	})
+
+	t.Run("Four Of A Kind", func(t *testing.T) {
+		combination := Combination {
+			cards: []Card{
+				{face: Two, suit: Spades},
+				{face: Two, suit: Diamonds},
+				{face: Two, suit: Clubs},
+				{face: Two, suit: Hearts},
+				{face: King, suit: Spades},
+			},
+		}
+
+		require.Equal(t, Two, combination.MainCard())
+	})
+
+	t.Run("Straight Flush", func(t *testing.T) {
+		combination := Combination {
+			cards: []Card{
+				{face: Three, suit: Spades},
+				{face: Four, suit: Diamonds},
+				{face: Five, suit: Clubs},
+				{face: Six, suit: Clubs},
+				{face: Seven, suit: Spades},
+			},
+		}
+		
+		require.Equal(t, Seven, combination.MainCard())
+
+	})
+}
+
+func TestCombination_SecondaryCard(t *testing.T) {
+
+	var highCard = Combination { 
+		cards: []Card {
+			{face: Two, suit: Spades},
+			{face: King, suit: Diamonds},
+			{face: Ace, suit: Hearts},
+			{face: Ten, suit: Clubs},
+			{face: Queen, suit: Spades},
+		},
+	}
+			
+	var	pair = Combination {
+		cards: []Card {
+			{face: Two, suit: Spades},
+			{face: King, suit: Diamonds},
+			{face: King, suit: Hearts},
+			{face: Ten, suit: Clubs},
+			{face: Queen, suit: Spades},
+		},
+	}
+			
+
+
+	var threeOfAKind = Combination {
+		cards: []Card {
+			{face: Two, suit: Spades},
+			{face: King, suit: Diamonds},
+			{face: King, suit: Hearts},
+			{face: King, suit: Clubs},
+			{face: Ten, suit: Spades},
+		},
+	}
+
+	var straight = Combination {
+		cards: []Card {
+			{face: Two, suit: Spades},
+			{face: Three, suit: Diamonds},
+			{face: Four, suit: Hearts},
+			{face: Five, suit: Clubs},
+			{face: Six, suit: Spades},
+		},
+	}
+
+	var flush = Combination {
+		cards: []Card {
+			{face: Two, suit: Spades},
+			{face: Seven, suit: Spades},
+			{face: Four, suit: Spades},
+			{face: Five, suit: Spades},
+			{face: Six, suit: Spades},
+		},
+	}
+
+	var fourOfAKind = Combination {
+		cards: []Card {
+			{face: Two, suit: Spades},
+			{face: King, suit: Diamonds},
+			{face: King, suit: Hearts},
+			{face: King, suit: Clubs},
+			{face: King, suit: Clubs},
+		},
+	}
+
+	var straightFlush = Combination {
+		cards: []Card {
+			{face: Two, suit: Spades},
+			{face: Three, suit: Spades},
+			{face: Four, suit: Spades},
+			{face: Five, suit: Spades},
+			{face: Six, suit: Spades},
+		},
+	}
+
+	t.Run("Empty Secondaries", func(t *testing.T) {
+		require.Nil(t, highCard.SecondaryCard())
+		require.Nil(t, pair.SecondaryCard())
+		require.Nil(t, threeOfAKind.SecondaryCard())
+		require.Nil(t, straight.SecondaryCard())
+		require.Nil(t, flush.SecondaryCard())
+		require.Nil(t, fourOfAKind.SecondaryCard())
+		require.Nil(t, straightFlush.SecondaryCard())
+	})
+
+	t.Run("Full House", func(t *testing.T) {
+		fullHouse := Combination {
+			cards: []Card {
+				{face: Two, suit: Spades},
+				{face: King, suit: Diamonds},
+				{face: King, suit: Hearts},
+				{face: King, suit: Clubs},
+				{face: Two, suit: Clubs},
+			},
+		}
+
+		require.Equal(t, Two, *fullHouse.SecondaryCard())
+	
+	})
+	
+	t.Run("Two Pair", func(t *testing.T) {
+		twoPair := Combination {
+			cards: []Card {
+				{face: Two, suit: Spades},
+				{face: King, suit: Diamonds},
+				{face: King, suit: Hearts},
+				{face: Ten, suit: Clubs},
+				{face: Ten, suit: Spades},
+			},
+		}
+
+		require.Equal(t, Ten, *twoPair.SecondaryCard())
+	})
+
+}
+
 func TestNewCombinations(t *testing.T) {
 	t.Run("Non-Unique slice of cards", func(t *testing.T) {
 		cards := []Card {
@@ -609,5 +971,133 @@ func TestCombination_Less(t *testing.T) {
 		require.False(t, straightFlush.Less(flush))
 		require.False(t, straightFlush.Less(fullHouse))
 		require.False(t, straightFlush.Less(fourOfAKind))
+	})
+
+	t.Run("High Card", func(t *testing.T) {
+		highCardSeven:= Combination { 
+			cards: []Card {
+				{face: Two, suit: Spades},
+				{face: Three, suit: Diamonds},
+				{face: Seven, suit: Hearts},
+				{face: Six, suit: Clubs},
+				{face: Five, suit: Spades},
+			},
+		}
+
+		highCardEight := Combination {
+			cards: []Card {
+				{face: Two, suit: Spades},
+				{face: Three, suit: Diamonds},
+				{face: Eight, suit: Hearts},
+				{face: Six, suit: Clubs},
+				{face: Five, suit: Spades},
+			},
+		}
+
+
+		highCardNine := Combination {
+			cards: []Card {
+				{face: Two, suit: Spades},
+				{face: Three, suit: Diamonds},
+				{face: Nine, suit: Hearts},
+				{face: Six, suit: Clubs},
+				{face: Five, suit: Spades},
+			},
+		}
+
+		highCardTen := Combination {
+			cards: []Card {
+				{face: Two, suit: Spades},
+				{face: Three, suit: Diamonds},
+				{face: Ten, suit: Hearts},
+				{face: Six, suit: Clubs},
+				{face: Five, suit: Spades},
+			},
+		}
+
+		highCardJack:= Combination {
+			cards: []Card {
+				{face: Two, suit: Spades},
+				{face: Three, suit: Diamonds},
+				{face: Jack, suit: Hearts},
+				{face: Six, suit: Clubs},
+				{face: Five, suit: Spades},
+			},
+		}
+
+		highCardQueen := Combination {
+			cards: []Card {
+				{face: Two, suit: Spades},
+				{face: Three, suit: Diamonds},
+				{face: Queen, suit: Hearts},
+				{face: Six, suit: Clubs},
+				{face: Five, suit: Spades},
+			},
+		}
+
+		highCardKing := Combination {
+			cards: []Card {
+				{face: Two, suit: Spades},
+				{face: Three, suit: Diamonds},
+				{face: King, suit: Hearts},
+				{face: Six, suit: Clubs},
+				{face: Five, suit: Spades},
+			},
+		}
+
+		highCardAce := Combination {
+			cards: []Card {
+				{face: Two, suit: Spades},
+				{face: Three, suit: Diamonds},
+				{face: Ace, suit: Hearts},
+				{face: Six, suit: Clubs},
+				{face: Five, suit: Spades},
+			},
+		}
+
+		require.True(t, highCardSeven.Less(highCardEight))
+		require.True(t, highCardSeven.Less(highCardNine))
+		require.True(t, highCardSeven.Less(highCardTen))
+		require.True(t, highCardSeven.Less(highCardJack))
+		require.True(t, highCardSeven.Less(highCardQueen))
+		require.True(t, highCardSeven.Less(highCardKing))
+		require.True(t, highCardSeven.Less(highCardAce))
+		
+		require.False(t, highCardEight.Less(highCardSeven))
+		require.True(t, highCardEight.Less(highCardNine))
+		require.True(t, highCardEight.Less(highCardTen))
+		require.True(t, highCardEight.Less(highCardJack))
+		require.True(t, highCardEight.Less(highCardQueen))
+		require.True(t, highCardEight.Less(highCardKing))
+		require.True(t, highCardEight.Less(highCardAce))
+	})
+}
+
+func TestLessByKickers(t *testing.T) {
+	t.Run("High Card", func(t *testing.T) {
+		more := Combination { 
+			cards: []Card {
+				{face: Two, suit: Spades},
+				{face: King, suit: Diamonds},
+				{face: Ace, suit: Hearts},
+				{face: Ten, suit: Clubs},
+				{face: Queen, suit: Spades},
+			},
+		}
+
+		less := Combination { 
+			cards: []Card {
+				{face: Two, suit: Spades},
+				{face: Seven, suit: Diamonds},
+				{face: Eight, suit: Hearts},
+				{face: Ten, suit: Clubs},
+				{face: Jack, suit: Spades},
+			},
+		}
+
+		moreLess := lessByKickers([]Combination {more, less})
+		lessMore := lessByKickers([]Combination {less, more})
+		require.Equal(t, false , moreLess)
+		require.Equal(t, true, lessMore)
 	})
 }

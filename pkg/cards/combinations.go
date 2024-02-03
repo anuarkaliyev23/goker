@@ -71,15 +71,26 @@ func (r Combination) HighestCardFace() Face {
 }
 
 func (r Combination) Kickers() []Card {
+	if r.Type() == HighCard || r.Type() == Flush {
+		highestCardFace := r.HighestCardFace()
+		filtered := lo.Filter(r.cards, func(card Card, index int) bool {
+			return card.Face() != highestCardFace
+		})
+
+		sort.Sort(ByFaceReversed(filtered))
+		return filtered
+	}
+
+
 	uniques := lo.FindUniquesBy(r.cards, func(card Card) Face  {
 		return card.Face()
 	})
 
-	sort.Sort(ByFace(uniques))
+	sort.Sort(ByFaceReversed(uniques))
 	return uniques
 }
 
-func (r Combination) MainCombinationCard() Face {
+func (r Combination) MainCard() Face {
 	if (comparedByHighestCard(r.Type())) {
 		return r.HighestCardFace()
 	}
@@ -96,17 +107,18 @@ func (r Combination) MainCombinationCard() Face {
 	}
 }
 
-func (r Combination) SecondaryCombinationCard() *Face {
-	if (comparedBySecondary(r.Type())) {
-		
-		cardsDuplicatesByFace := lo.FindDuplicatesBy(r.cards, func(card Card) Face {
-			return card.Face()
-		})
-		sort.Sort(ByFace(cardsDuplicatesByFace))
-		result := cardsDuplicatesByFace[0].Face()
-		return &result
+func (r Combination) SecondaryCard() *Face {
+	if !comparedBySecondary(r.Type()) {
+		return nil
 	}
-	return nil
+
+	cardsDuplicatesByFace := lo.FindDuplicatesBy(r.cards, func(card Card) Face {
+		return card.Face()
+	})
+
+	sort.Sort(ByFace(cardsDuplicatesByFace))
+	result := cardsDuplicatesByFace[0].Face()
+	return &result
 }
 
 func (r Combination) isFlush() bool {
@@ -227,64 +239,69 @@ func (r Combination) toFaceCounts() []int {
 
 func (r Combination) Less(other Combination) bool {
 	combinations := []Combination{r, other}
-	types := lo.Map(combinations, func(combination Combination, index int) CombinationType {
-		return combination.Type()
-	})
 
-	if (types[0] == types[1]) {
-		return false
+	if r.Type() < other.Type() {
+		return true
+	} else if r.Type() == other.Type() {
+		if comparedByHighestCard(r.Type()) {
+			return lessByHighestCard(combinations)
+		} else if comparedBySecondary(r.Type()) {
+			return lessBySecondary(combinations)
+		} else if comparedByKickers(r.Type()) {
+			return lessByKickers(combinations)
+		}
 	}
 
-	if types[0] < types[1] {
+	return false
+}
+
+func lessByHighestCard(combinations []Combination) bool {
+	highestCards := lo.Map(combinations, func(combination Combination, index int) Face {
+		return combination.HighestCardFace()
+	})
+
+	toInts := lo.Map(highestCards, func(face Face, index int) int {
+		return int(face)
+	})
+
+	return toInts[0] < toInts[1]
+}
+
+func lessBySecondary(combinations []Combination) bool {
+	toSecondary := lo.Map(combinations, func(combination Combination, index int) *Face {
+		return combination.SecondaryCard()
+	})
+	
+	if int(*toSecondary[0]) < int(*toSecondary[1]) {
 		return true
-	} else if types[0] == types[1] {
-		if comparedByHighestCard(types[0]) {
-			highestCards := lo.Map(combinations, func(combination Combination, index int) Face {
-				return combination.HighestCardFace()
-			})
+	}
+	
+	return false
+}
 
-			toInts := lo.Map(highestCards, func(face Face, index int) int {
-				return int(face)
-			})
+func lessByKickers(combinations []Combination) bool {
+	toKickers := lo.Map(combinations, func(combination Combination, index int) []Card {
+		return combination.Kickers()
+	})
 
-			if toInts[0] < toInts[1] {
-				return true
-			} else if toInts[0] == toInts[1] {
-				if comparedBySecondary(types[0]) {
-					toSecondary := lo.Map(combinations, func(combination Combination, index int) *Face {
-						return combination.SecondaryCombinationCard()
-					})
+	first := lo.Map(toKickers[0], func(card Card, index int) Face {
+		return card.Face()
+	})
 
-					if int(*toSecondary[0]) < int(*toSecondary[1]) {
-						return true
-					}
-				}
+	second := lo.Map(toKickers[1], func(card Card, index int) Face {
+		return card.Face()
+	})
 
-				if comparedByKickers(types[0]) {
-					toKickers := lo.Map(combinations, func(combination Combination, index int) []Card {
-						return combination.Kickers()
-					})
-
-					kickerFaces := lo.Map(toKickers, func(cards []Card, index int) []Face {
-						faces := lo.Map(cards, func(card Card, index int) Face {
-							return card.Face()
-						})
-						return faces
-					})
-					
-					for face, index := range kickerFaces[0] {
-						opposite := kickerFaces[1][index]
-						if int(face) < int(opposite) {
-							return true
-						}
-					}
-
-				}
-			}
+	for index, face := range first {
+		opposite := second[index]
+		if int(face) < int(opposite) {
+			return true
 		}
 	}
 	return false
+
 }
+
 
 
 
