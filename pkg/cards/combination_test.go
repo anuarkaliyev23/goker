@@ -348,7 +348,7 @@ func TestCombination_SecondaryCard(t *testing.T) {
 			},
 		}
 
-		require.Equal(t, Two, *fullHouse.SecondaryCard())
+		require.Equal(t, int(Two), int(*fullHouse.SecondaryCard()))
 	
 	})
 	
@@ -1184,6 +1184,84 @@ func TestCombination_Less(t *testing.T) {
 		require.False(t, combination_4.Less(combination_2))
 		require.False(t, combination_4.Less(combination_3))
 	})
+
+	t.Run("Pair", func(t *testing.T) {
+		t.Run("88KJQ vs 77KJQ", func(t *testing.T) {
+			more := Combination{
+				cards: []Card{
+					{face: Eight, suit: Hearts},
+					{face: Eight, suit: Diamonds},
+					{face: King, suit: Spades},
+					{face: Jack, suit: Clubs},
+					{face: Queen, suit: Spades},
+				},
+			}
+
+			less := Combination {
+				cards: []Card{
+					{face: Seven, suit: Hearts},
+					{face: Seven, suit: Diamonds},
+					{face: King, suit: Spades},
+					{face: Jack, suit: Clubs},
+					{face: Queen, suit: Spades},
+				},
+			}
+			
+			require.True(t, less.Less(more))
+			require.False(t, more.Less(less))
+		})
+
+		t.Run("88KJQ vs 88KJQ", func(t *testing.T) {
+			more := Combination{
+				cards: []Card{
+					{face: Eight, suit: Hearts},
+					{face: Eight, suit: Diamonds},
+					{face: King, suit: Spades},
+					{face: Jack, suit: Clubs},
+					{face: Queen, suit: Spades},
+				},
+			}
+
+			less := Combination {
+				cards: []Card{
+					{face: Eight, suit: Hearts},
+					{face: Eight, suit: Diamonds},
+					{face: King, suit: Spades},
+					{face: Jack, suit: Clubs},
+					{face: Queen, suit: Spades},
+				},
+			}
+			
+			require.False(t, less.Less(more))
+			require.False(t, more.Less(less))
+		})
+
+
+		t.Run("88KJQ vs 88JQT", func(t *testing.T) {
+			more := Combination{
+				cards: []Card{
+					{face: Eight, suit: Hearts},
+					{face: Eight, suit: Diamonds},
+					{face: King, suit: Spades},
+					{face: Jack, suit: Clubs},
+					{face: Queen, suit: Spades},
+				},
+			}
+
+			less := Combination {
+				cards: []Card{
+					{face: Eight, suit: Hearts},
+					{face: Eight, suit: Diamonds},
+					{face: Jack, suit: Clubs},
+					{face: Queen, suit: Spades},
+					{face: Ten, suit: Spades},
+				},
+			}
+			
+			require.True(t, less.Less(more))
+			require.False(t, more.Less(less))
+		})
+	})
 }
 
 func TestLessByKickers(t *testing.T) {
@@ -1493,6 +1571,70 @@ func TestLessByKickers(t *testing.T) {
 			moreLess := lessByKickers([]Combination {more, less})
 			lessMore := lessByKickers([]Combination {less, more})
 			require.Equal(t, false, moreLess)
+			require.Equal(t, true, lessMore)
+		})
+	})
+}
+
+
+func TestLessBySecondary(t *testing.T){
+	t.Run("Two Pair", func(t *testing.T) {
+		t.Run("8844A vs 8833A", func(t *testing.T) {
+			more := Combination { 
+				cards: []Card {
+					{face: Eight, suit: Hearts},
+					{face: Eight, suit: Diamonds},
+					{face: Four, suit: Spades},
+					{face: Four, suit: Clubs},
+					{face: Ace, suit: Spades},
+				},
+			}
+
+			less := Combination { 
+				cards: []Card {
+					{face: Eight, suit: Hearts},
+					{face: Eight, suit: Diamonds},
+					{face: Three, suit: Spades},
+					{face: Three, suit: Clubs},
+					{face: Ace, suit: Spades},
+				},
+			}
+
+			moreLess := lessBySecondary([]Combination {more, less})
+			lessMore := lessBySecondary([]Combination {less, more})
+			require.Equal(t, false , moreLess)
+			require.Equal(t, true, lessMore)
+
+		})
+
+	})
+
+
+	t.Run("Full House", func(t *testing.T) {
+		t.Run("KKK88 vs KKK77", func(t *testing.T) {
+			more := Combination { 
+				cards: []Card {
+					{face: King, suit: Hearts},
+					{face: King, suit: Diamonds},
+					{face: King, suit: Spades},
+					{face: Eight, suit: Clubs},
+					{face: Eight, suit: Spades},
+				},
+			}
+
+			less := Combination { 
+				cards: []Card {
+					{face: King, suit: Hearts},
+					{face: King, suit: Diamonds},
+					{face: King, suit: Spades},
+					{face: Seven, suit: Clubs},
+					{face: Seven, suit: Spades},
+				},
+			}
+
+			moreLess := lessBySecondary([]Combination {more, less})
+			lessMore := lessBySecondary([]Combination {less, more})
+			require.Equal(t, false , moreLess)
 			require.Equal(t, true, lessMore)
 		})
 	})

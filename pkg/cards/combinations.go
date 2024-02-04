@@ -35,7 +35,7 @@ func comparedBySecondary(ctype CombinationType) bool {
 }
 
 func comparedByKickers(ctype CombinationType) bool {
-	return ctype == HighCard || ctype == TwoPair || ctype == ThreeOfAKind || ctype == FourOfAKind || ctype == Flush
+	return ctype == HighCard || ctype == Pair || ctype == TwoPair || ctype == ThreeOfAKind || ctype == FourOfAKind || ctype == Flush
 }
 
 
@@ -125,14 +125,32 @@ func (r Combination) SecondaryCard() *Face {
 	if !comparedBySecondary(r.Type()) {
 		return nil
 	}
+	
+	if r.Type() != FullHouse {
+		cardsDuplicatesByFace := lo.FindDuplicatesBy(r.cards, func(card Card) Face {
+			return card.Face()
+		})
 
-	cardsDuplicatesByFace := lo.FindDuplicatesBy(r.cards, func(card Card) Face {
-		return card.Face()
-	})
+		sort.Sort(ByFace(cardsDuplicatesByFace))
+		result := cardsDuplicatesByFace[0].Face()
+		return &result
+	} else {
+		uniques := lo.FindDuplicatesBy(r.cards, func(card Card) Face {
+			return card.Face()
+		})
 
-	sort.Sort(ByFace(cardsDuplicatesByFace))
-	result := cardsDuplicatesByFace[0].Face()
-	return &result
+		firstCount := lo.CountBy(r.cards, func(card Card) bool {
+			return card.Face() == uniques[0].Face()
+		})
+
+		if firstCount == 2 {
+			result := uniques[0].Face()
+			return &result
+		} else {
+			result := uniques[1].Face()
+			return &result
+		}
+	}
 }
 
 func (r Combination) isFlush() bool {
@@ -292,15 +310,11 @@ func lessByHighestCard(combinations []Combination) bool {
 }
 
 func lessBySecondary(combinations []Combination) bool {
-	toSecondary := lo.Map(combinations, func(combination Combination, index int) *Face {
-		return combination.SecondaryCard()
-	})
-	
-	if int(*toSecondary[0]) < int(*toSecondary[1]) {
+	if int(*combinations[0].SecondaryCard()) < int(*combinations[1].SecondaryCard()) {
 		return true
+	} else {
+		return false
 	}
-	
-	return false
 }
 
 func lessByKickers(combinations []Combination) bool {
