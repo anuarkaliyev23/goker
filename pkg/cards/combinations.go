@@ -284,9 +284,9 @@ func (r Combination) Less(other Combination) bool {
 			return true
 		} else if r.MainCard() == other.MainCard() {
 			if comparedBySecondary(r.Type()) {
-				if *r.SecondaryCard() < *other.SecondaryCard() {
-					return true
-				} else if *r.SecondaryCard() == *other.SecondaryCard() {
+				if int(*r.SecondaryCard()) < int(*other.SecondaryCard()) {
+					return lessBySecondary(combinations)
+				} else if int(*r.SecondaryCard()) == int(*other.SecondaryCard()) {
 					if comparedByKickers(r.Type()) {
 						return lessByKickers(combinations)
 					} else {

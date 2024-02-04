@@ -1422,6 +1422,242 @@ func TestCombination_Less(t *testing.T) {
 			require.False(t, more.Less(less))
 		})
 	})
+
+	t.Run("Flush", func(t *testing.T) {
+		t.Run("A8432 vs K8432", func(t *testing.T) {
+			more := Combination {
+				cards: []Card{
+					{face: Ace, suit: Hearts},
+					{face: Eight, suit: Diamonds},
+					{face: Four, suit: Clubs},
+					{face: Three, suit: Spades},
+					{face: Two, suit: Spades},
+				},
+			}
+
+			less := Combination{
+				cards: []Card{
+					{face: King, suit: Hearts},
+					{face: Eight, suit: Diamonds},
+					{face: Four, suit: Clubs},
+					{face: Three, suit: Spades},
+					{face: Two, suit: Spades},
+				},
+			}
+
+			require.True(t, less.Less(more))
+			require.False(t, more.Less(less))
+		})
+
+
+		t.Run("A8542 vs A8432", func(t *testing.T) {
+			more := Combination {
+				cards: []Card{
+					{face: Ace, suit: Hearts},
+					{face: Eight, suit: Diamonds},
+					{face: Five, suit: Clubs},
+					{face: Four, suit: Spades},
+					{face: Two, suit: Spades},
+				},
+			}
+
+			less := Combination{
+				cards: []Card{
+					{face: Ace, suit: Hearts},
+					{face: Eight, suit: Diamonds},
+					{face: Four, suit: Clubs},
+					{face: Three, suit: Spades},
+					{face: Two, suit: Spades},
+				},
+			}
+
+			require.True(t, less.Less(more))
+			require.False(t, more.Less(less))
+		})
+
+		t.Run("Full House", func(t *testing.T) {
+			t.Run("KKK88 vs KKK77", func(t *testing.T) {
+				more := Combination {
+					cards: []Card{
+						{face: King, suit: Hearts},
+						{face: King, suit: Diamonds},
+						{face: King, suit: Clubs},
+						{face: Eight, suit: Spades},
+						{face: Eight, suit: Spades},
+					},
+				}
+
+				less := Combination{
+					cards: []Card{
+						{face: King, suit: Hearts},
+						{face: King, suit: Diamonds},
+						{face: King, suit: Clubs},
+						{face: Seven, suit: Spades},
+						{face: Seven, suit: Spades},
+					},
+				}
+
+				require.True(t, less.Less(more))
+				require.False(t, more.Less(less))
+			})
+		})
+
+
+		t.Run("KKK88 vs KKK88", func(t *testing.T) {
+			more := Combination {
+				cards: []Card{
+					{face: King, suit: Hearts},
+					{face: King, suit: Diamonds},
+					{face: King, suit: Clubs},
+					{face: Eight, suit: Spades},
+					{face: Eight, suit: Spades},
+				},
+			}
+
+			less := Combination{
+				cards: []Card{
+					{face: King, suit: Hearts},
+					{face: King, suit: Diamonds},
+					{face: King, suit: Clubs},
+					{face: Eight, suit: Spades},
+					{face: Eight, suit: Spades},
+				},
+			}
+
+			require.False(t, less.Less(more))
+			require.False(t, more.Less(less))
+		})
+
+		t.Run("KKK88 vs QQQ88", func(t *testing.T) {
+			more := Combination {
+				cards: []Card{
+					{face: King, suit: Hearts},
+					{face: King, suit: Diamonds},
+					{face: King, suit: Clubs},
+					{face: Eight, suit: Spades},
+					{face: Eight, suit: Spades},
+				},
+			}
+
+			less := Combination{
+				cards: []Card{
+					{face: Queen, suit: Hearts},
+					{face: Queen, suit: Diamonds},
+					{face: Queen, suit: Clubs},
+					{face: Eight, suit: Spades},
+					{face: Eight, suit: Spades},
+				},
+			}
+
+			require.True(t, less.Less(more))
+			require.False(t, more.Less(less))
+		})
+
+
+		t.Run("KKK88 vs KKK77", func(t *testing.T) {
+			more := Combination {
+				cards: []Card{
+					{face: King, suit: Hearts},
+					{face: King, suit: Diamonds},
+					{face: King, suit: Clubs},
+					{face: Eight, suit: Spades},
+					{face: Eight, suit: Spades},
+				},
+			}
+
+			less := Combination{
+				cards: []Card{
+					{face: King, suit: Hearts},
+					{face: King, suit: Diamonds},
+					{face: King, suit: Clubs},
+					{face: Seven, suit: Spades},
+					{face: Seven, suit: Spades},
+				},
+			}
+
+			require.True(t, less.Less(more))
+			require.False(t, more.Less(less))
+		})
+	})
+
+	t.Run("Four Of A Kind", func(t *testing.T) {
+		t.Run("KKKK8 vs KKKK7", func(t *testing.T) {
+			more := Combination {
+				cards: []Card{
+					{face: King, suit: Hearts},
+					{face: King, suit: Diamonds},
+					{face: King, suit: Clubs},
+					{face: King, suit: Spades},
+					{face: Eight, suit: Spades},
+				},
+			}
+
+			less := Combination{
+				cards: []Card{
+					{face: King, suit: Hearts},
+					{face: King, suit: Diamonds},
+					{face: King, suit: Clubs},
+					{face: King, suit: Spades},
+					{face: Seven, suit: Spades},
+				},
+			}
+
+			require.True(t, less.Less(more))
+			require.False(t, more.Less(less))
+		})
+
+		t.Run("KKKK8 vs QQQQ8", func(t *testing.T) {
+			more := Combination {
+				cards: []Card{
+					{face: King, suit: Hearts},
+					{face: King, suit: Diamonds},
+					{face: King, suit: Clubs},
+					{face: King, suit: Spades},
+					{face: Eight, suit: Spades},
+				},
+			}
+
+			less := Combination{
+				cards: []Card{
+					{face: Queen, suit: Hearts},
+					{face: Queen, suit: Diamonds},
+					{face: Queen, suit: Clubs},
+					{face: Queen, suit: Spades},
+					{face: Seven, suit: Spades},
+				},
+			}
+
+			require.True(t, less.Less(more))
+			require.False(t, more.Less(less))
+		})
+
+		t.Run("Straight Flush", func(t *testing.T) {
+			t.Run("23456 vs A2345", func(t *testing.T) {
+				more := Combination {
+					cards: []Card{
+						{face: Two, suit: Hearts},
+						{face: Three, suit: Hearts},
+						{face: Four, suit: Hearts},
+						{face: Five, suit: Hearts},
+						{face: Six, suit: Hearts},
+					},
+				}
+
+				less := Combination{
+					cards: []Card{
+						{face: Ace, suit: Hearts},
+						{face: Two, suit: Hearts},
+						{face: Three, suit: Hearts},
+						{face: Four, suit: Hearts},
+						{face: Five, suit: Hearts},
+					},
+				}
+
+				require.True(t, less.Less(more))
+				require.False(t, more.Less(less))
+			})
+		})
+	})
 }
 
 func TestLessByKickers(t *testing.T) {
