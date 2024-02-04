@@ -92,6 +92,11 @@ func (r Combination) Kickers() []Card {
 
 func (r Combination) MainCard() Face {
 	if (comparedByHighestCard(r.Type())) {
+		if r.isStraight() {
+			if lo.Contains(r.toFaces(), Ace) && lo.Contains(r.toFaces(), Two) {
+				return Five
+			}
+		}
 		return r.HighestCardFace()
 	}
 
