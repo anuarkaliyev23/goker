@@ -2077,6 +2077,8 @@ func TestCombinationsPermutationsOf(t *testing.T) {
 			combinations, err := CombinationsOf(cards)
 			require.NoError(t, err)
 			require.Equal(t, 21, len(combinations))
+			require.Equal(t, FourOfAKind, combinations[0].Type())
+			require.Equal(t, FullHouse, combinations[len(combinations) - 1].Type())
 		})
 	})
 
@@ -2093,6 +2095,7 @@ func TestCombinationsPermutationsOf(t *testing.T) {
 
 			combinations, err := CombinationsOf(cards)
 			require.NoError(t, err)
+			require.Equal(t, FourOfAKind, combinations[0].Type())
 			require.Equal(t, 6, len(combinations))
 		})
 	})
@@ -2110,6 +2113,7 @@ func TestCombinationsPermutationsOf(t *testing.T) {
 
 			combinations, err := CombinationsOf(cards)
 			require.NoError(t, err)
+			require.Equal(t, FourOfAKind, combinations[0].Type())
 			require.Equal(t, 1, len(combinations))
 		})
 	})
@@ -2126,6 +2130,47 @@ func TestCombinationsPermutationsOf(t *testing.T) {
 
 			_, err := CombinationsOf(cards)
 			require.Error(t, err)
+		})
+	})
+}
+
+
+func TestStrongestCombinationOf(t *testing.T) {
+	t.Run("7 cards", func(t *testing.T) {
+		t.Run("AA23456, expected 2-6 straight", func(t *testing.T) {
+			cards := []Card {
+				{face: Ace, suit: Hearts},
+				{face: Ace, suit: Spades},
+				{face: Two, suit: Hearts},
+				{face: Three, suit: Clubs},
+				{face: Four, suit: Diamonds},
+				{face: Five, suit: Diamonds},
+				{face: Six, suit: Hearts},
+			}
+
+			strongest, err := StrongestCombinationOf(cards)
+			require.NoError(t, err)
+			require.NotNil(t, strongest)
+			require.Equal(t, Straight, strongest.Type())
+			require.Equal(t, Six, strongest.MainCard())
+		})
+
+		t.Run("AAK8754, expected flush", func(t *testing.T) {
+			cards := []Card {
+				{face: Ace, suit: Hearts},
+				{face: Ace, suit: Clubs},
+				{face: Three, suit: Clubs},
+				{face: Four, suit: Hearts},
+				{face: Five, suit: Hearts},
+				{face: Six, suit: Hearts},
+				{face: Eight, suit: Hearts},
+			}
+
+			strongest, err := StrongestCombinationOf(cards)
+			require.NoError(t, err)
+			require.NotNil(t, strongest)
+			require.Equal(t, Flush, strongest.Type())
+			require.Equal(t, Ace, strongest.MainCard())
 		})
 	})
 }

@@ -359,9 +359,6 @@ func lessByKickers(combinations []Combination) bool {
 }
 
 
-
-
-
 func NewCombination(cards []Card) (*Combination, error) {
 	sort.Sort(ByFace(cards))
 	if len(cards) == validCardsLength {
@@ -402,5 +399,15 @@ func CombinationsOf(cards[] Card) ([]Combination, error) {
 		combinations = append(combinations, *combination)
 	}
 
+	sort.Sort(ByCombinationReversed(combinations))
 	return combinations, nil
+}
+
+func StrongestCombinationOf(cards []Card) (*Combination, error) {
+	combinations, err := CombinationsOf(cards)
+	if err != nil {
+		return nil, err
+	}
+
+	return &combinations[0], nil
 }
