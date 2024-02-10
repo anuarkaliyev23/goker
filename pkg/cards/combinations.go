@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"sort"
 
+	"gonum.org/v1/gonum/stat/combin"
+
 	"github.com/samber/lo"
 )
 
@@ -12,6 +14,8 @@ type CombinationType int
 
 const validCardsLength = 5
 const validStraightSum = 10
+
+const validCombinatoricsLength = 7
 
 const (
 	HighCard CombinationType = iota
@@ -274,6 +278,14 @@ func (r Combination) toFaceCounts() []int {
 	return toCount
 }
 
+func (r Combination) Tie(other Combination) bool {
+	return !r.Less(other) && !other.Less(r)
+}
+
+func (r Combination) More(other Combination) bool {
+	return other.Less(r)
+}
+
 func (r Combination) Less(other Combination) bool {
 	combinations := []Combination{r, other}
 
@@ -364,3 +376,31 @@ func NewCombination(cards []Card) (*Combination, error) {
 	}
 }
 
+
+func CombinationsOf(cards[] Card) ([]Combination, error) {
+	if len(cards) < validCardsLength {
+		return nil, fmt.Errorf("Cannot construct permutations from {%d} cards, must be more than 5", len(cards))
+	}
+
+	combinatoricsCombinations := combin.Combinations(len(cards), validCardsLength)
+	for i := range combinatoricsCombinations {
+		sort.Ints(combinatoricsCombinations[i])
+	}
+	
+	combinations := []Combination{}
+
+	for _, v := range combinatoricsCombinations {
+		toCards := lo.Map(v, func(value int, index int) Card {
+			return cards[value]
+		})
+		
+		combination, err := NewCombination(toCards)
+		if err != nil {
+			return nil, err
+		}
+
+		combinations = append(combinations, *combination)
+	}
+
+	return combinations, nil
+}

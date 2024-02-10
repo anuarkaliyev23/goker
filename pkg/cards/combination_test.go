@@ -2060,3 +2060,72 @@ func TestLessBySecondary(t *testing.T){
 		})
 	})
 }
+
+func TestCombinationsPermutationsOf(t *testing.T) {
+	t.Run("7 cards", func(t *testing.T) {
+		t.Run("KKKK888", func(t *testing.T) {
+			cards := []Card{
+				{face: King, suit: Hearts},
+				{face: King, suit: Diamonds},
+				{face: King, suit: Spades},
+				{face: King, suit: Clubs},
+				{face: Eight, suit: Clubs},
+				{face: Eight, suit: Spades},
+				{face: Eight, suit: Hearts},
+			}
+
+			combinations, err := CombinationsOf(cards)
+			require.NoError(t, err)
+			require.Equal(t, 21, len(combinations))
+		})
+	})
+
+	t.Run("6 cards", func(t *testing.T) {
+		t.Run("KKKK88", func(t *testing.T) {
+			cards := []Card{
+				{face: King, suit: Hearts},
+				{face: King, suit: Diamonds},
+				{face: King, suit: Spades},
+				{face: King, suit: Clubs},
+				{face: Eight, suit: Clubs},
+				{face: Eight, suit: Spades},
+			}
+
+			combinations, err := CombinationsOf(cards)
+			require.NoError(t, err)
+			require.Equal(t, 6, len(combinations))
+		})
+	})
+
+
+	t.Run("5 cards", func(t *testing.T) {
+		t.Run("KKKK8", func(t *testing.T) {
+			cards := []Card{
+				{face: King, suit: Hearts},
+				{face: King, suit: Diamonds},
+				{face: King, suit: Spades},
+				{face: King, suit: Clubs},
+				{face: Eight, suit: Spades},
+			}
+
+			combinations, err := CombinationsOf(cards)
+			require.NoError(t, err)
+			require.Equal(t, 1, len(combinations))
+		})
+	})
+
+
+	t.Run("4 cards", func(t *testing.T) {
+		t.Run("KKKK", func(t *testing.T) {
+			cards := []Card{
+				{face: King, suit: Hearts},
+				{face: King, suit: Diamonds},
+				{face: King, suit: Spades},
+				{face: King, suit: Clubs},
+			}
+
+			_, err := CombinationsOf(cards)
+			require.Error(t, err)
+		})
+	})
+}

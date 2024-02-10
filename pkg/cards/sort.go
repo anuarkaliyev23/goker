@@ -29,3 +29,4 @@ func (r ByFaceReversed) Less(i, j int) bool {
 func (r ByFaceReversed) Swap(i, j int) {
 	r[i], r[j] = r[j], r[i]
 }
+
