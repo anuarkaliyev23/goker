@@ -376,7 +376,7 @@ func NewCombination(cards []Card) (*Combination, error) {
 
 func CombinationsOf(cards[] Card) ([]Combination, error) {
 	if len(cards) < validCardsLength {
-		return nil, fmt.Errorf("Cannot construct permutations from {%d} cards, must be more than 5", len(cards))
+		return nil, fmt.Errorf("Cannot construct combinations from {%d} cards, must be more than 5", len(cards))
 	}
 
 	combinatoricsCombinations := combin.Combinations(len(cards), validCardsLength)
