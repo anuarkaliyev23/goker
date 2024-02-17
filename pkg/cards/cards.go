@@ -127,6 +127,35 @@ func (d *Deck) Draw() (*Card, error) {
 	return drawn, nil
 }
 
+func (d *Deck) CardIsDrawn(card Card) bool {
+	return lo.Contains(d.drawn, card)
+}
+
+func (d *Deck) CardIsLeft(card Card) bool {
+	return lo.Contains(d.left, card)
+}
+
+func (d *Deck) ContainsCard(card Card) bool {
+	return d.CardIsDrawn(card) || d.CardIsLeft(card)
+}
+
+func (d *Deck) MoveToDrawn(card Card) error {
+	if d.CardIsDrawn(card) {
+		return fmt.Errorf("Card {%v} is already drawn", card)
+	}
+	if !d.CardIsLeft(card) {
+		return fmt.Errorf("Card {%v} is not present at the left cards", card)
+	}
+
+	d.drawn = append(d.drawn, card)
+	leftCards := lo.Reject(d.left, func(c Card, _ int) bool {
+		return card == c
+	})
+	
+	d.left = leftCards
+	return nil
+}
+
 func NewDeckWithoutValidation(cards []Card) Deck {
 	d := Deck{
 		left: cards,

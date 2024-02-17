@@ -5,6 +5,7 @@ import (
 
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 
@@ -78,7 +79,7 @@ func TestNewDeck(t *testing.T) {
 	})
 }
 
-func TestDraw(t *testing.T) {
+func TestDeck_Draw(t *testing.T) {
 	t.Run("Error on empty deck", func(t *testing.T) {
 		deck := Deck {
 			left: []Card{},
@@ -102,5 +103,39 @@ func TestDraw(t *testing.T) {
 		assert.Equal(t, 0, len(deck.left))
 		assert.Equal(t, 52, len(deck.drawn))
 		assert.True(t, lo.Contains(deck.drawn, *c))
+	})
+}
+
+func TestDeck_MoveToDraw(t *testing.T) {
+	t.Run("positive", func(t *testing.T) {
+		drawn := Card{face: Queen, suit: Spades}
+		deck := NewFullDeck()
+
+		err := deck.MoveToDrawn(drawn)
+		require.Equal(t, drawn, deck.drawn[0])
+		require.False(t, lo.Contains(deck.left, drawn))
+		require.NoError(t, err)
+	})
+
+	t.Run("negative", func(t *testing.T) {
+		t.Run("card already drawn", func(t *testing.T) {
+			deck := NewFullDeck()
+			drawnCard, err := deck.Draw()
+			require.NoError(t, err)
+
+			err = deck.MoveToDrawn(*drawnCard)
+			require.Error(t, err)
+		})
+
+		t.Run("card is not in left", func(t *testing.T) {
+			deck := NewFullDeck()
+			drawnCard, err := deck.Draw()
+			require.NoError(t, err)
+
+			deck.drawn = []Card{}
+
+			err = deck.MoveToDrawn(*drawnCard)
+			require.Error(t, err)
+		})
 	})
 }
