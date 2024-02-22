@@ -75,6 +75,7 @@ func HandOdds(config HandOddsConfig) (*HandOddsResult, error) {
 
 func iterate(hands [][]cards.Card, board []cards.Card) (*HandOddsIteration, error) {
 	deck := cards.NewFullDeck()
+	deck.Shuffle()
 
 	if len(hands) > ((cards.ValidDeckSize - CommunityCardsCount - BurnCardsCount) / HoleCardsCount) {
 		return nil, fmt.Errorf("Too many players {%d}", len(hands))

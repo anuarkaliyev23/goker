@@ -47,6 +47,10 @@ type Combination struct {
 	cards []Card
 }
 
+func (r Combination) AllCards() []Card {
+	return r.cards
+}
+
 func (r Combination) Type() CombinationType {
 	if r.isStraightFlush() {
 		return StraghtFlush

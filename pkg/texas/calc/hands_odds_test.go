@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/anuarkaliyev23/goker/pkg/cards"
+	"github.com/samber/lo"
 	"github.com/stretchr/testify/require"
 )
 
@@ -28,6 +29,56 @@ func generateHands(playersCount int) [][]cards.Card {
 	return hands
 }
 
+func generateHandOdds(playersCount int, iterations int) HandOddsResult {
+	hands := generateHands(playersCount)
+	config := HandOddsConfig {
+		Hands: hands,
+		IterationsCount: iterations,
+	}
+
+	odds, err := HandOdds(config)
+	if err != nil {
+		panic(err)
+	}
+
+	return *odds
+}
+
+func TestHandsResult_PlayerCombinations(t *testing.T) {
+	t.Run("positive", func(t *testing.T) {
+		t.Run("2 odds, no board", func(t *testing.T) {
+			odds := generateHandOdds(2, 1000)
+			playerHand, err := odds.PlayerHand(0)
+			require.NoError(t, err)
+			playerCombinations, err := odds.PlayerCombinations(0)
+			require.NoError(t, err)
+
+			contains := lo.Map(playerCombinations, func(c cards.Combination, _ int) bool {
+				return lo.Some(c.AllCards(), playerHand)
+			})
+	
+			present := lo.Contains(contains, true)
+			require.True(t, present)
+		})
+	})
+
+	t.Run("negative", func(t *testing.T) {
+		hands := generateHands(2)
+		iterationCount := 1000
+
+		config := HandOddsConfig{
+			Hands: hands,
+			IterationsCount: iterationCount,
+		}
+
+		odds, err := HandOdds(config)
+		require.NoError(t, err)
+		require.NotNil(t, odds)
+
+		
+	})
+}
+
 func TestHandsOdds(t *testing.T) {
 	t.Run("positive", func(t *testing.T) {
 		hands := generateHands(2)
@@ -38,7 +89,7 @@ func TestHandsOdds(t *testing.T) {
 			IterationsCount: iterationCount,
 		}
 
-		odds, err := HandsOdds(config)
+		odds, err := HandOdds(config)
 		require.NoError(t, err)
 		require.Equal(t, len(odds.Iterations), iterationCount)
 	})
@@ -53,7 +104,7 @@ func TestHandsOdds(t *testing.T) {
 				IterationsCount: iterationCount,
 			}
 			
-			result, err := HandsOdds(config)
+			result, err := HandOdds(config)
 			require.Nil(t, result)
 			require.Error(t, err)
 		})
@@ -67,7 +118,7 @@ func TestHandsOdds(t *testing.T) {
 				IterationsCount: iterationCount,
 			}
 			
-			result, err := HandsOdds(config)
+			result, err := HandOdds(config)
 			require.Nil(t, result)
 			require.Error(t, err)
 		})
@@ -87,7 +138,7 @@ func TestHandsOdds(t *testing.T) {
 				IterationsCount: 1,
 			}
 
-			result, err := HandsOdds(config)
+			result, err := HandOdds(config)
 			require.Error(t, err)
 			require.Nil(t, result)
 		})
@@ -101,7 +152,7 @@ func TestHandsOdds(t *testing.T) {
 				IterationsCount: iterationCount,
 			}
 
-			odds, err := HandsOdds(config)
+			odds, err := HandOdds(config)
 			require.Error(t, err)
 			require.Nil(t, odds)
 		})
