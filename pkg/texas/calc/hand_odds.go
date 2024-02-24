@@ -1,6 +1,7 @@
 package calc
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/anuarkaliyev23/goker/pkg/cards"
@@ -22,9 +23,62 @@ type HandOddsIteration struct {
 	Combinations []cards.Combination
 }
 
+func (r HandOddsIteration) StrongestCombination() (*cards.Combination, error) {
+	if len(r.Combinations) == 0 {
+		return nil, errors.New("Cannot determine winner in empty list of combinations")
+	}
+	maxCombination := r.Combinations[0]
+	
+	for i := 1; i < len(r.Combinations); i++ {
+		if r.Combinations[i].More(maxCombination) {
+			maxCombination = r.Combinations[0]
+		}
+	}
+	return &maxCombination, nil
+}
+
+func (r HandOddsIteration) Winners() ([]int, error) {
+	winner, err := r.StrongestCombination()
+	if err != nil {
+		return nil, err
+	}
+
+	winners := []int{}
+	
+	for i, v := range r.Combinations {
+		if v.Tie(*winner) {
+			winners = append(winners, i)
+		}
+	}
+
+	return winners, nil
+}
+
 type HandOddsResult struct {
 	Config HandOddsConfig
 	Iterations []HandOddsIteration
+}
+
+func (r HandOddsResult) PlayerWins(index int) (*int, error) {
+	winners := lo.Map(r.Iterations, func(iteration HandOddsIteration, _ int) []int {
+		w, err := iteration.Winners()
+		if err != nil {
+			return nil
+		}
+		return w
+	})
+
+	for i, v := range winners {
+		if v == nil {
+			return nil, fmt.Errorf("Cannot decide winner for iteration {%d}, error in calculations", i)
+		}
+	}
+
+	wins := lo.CountBy(winners, func(slice []int) bool {
+		return lo.Contains(slice, index)
+	})
+	
+	return &wins, nil
 }
 
 func (r HandOddsResult) NumberOfPlayers() int {
