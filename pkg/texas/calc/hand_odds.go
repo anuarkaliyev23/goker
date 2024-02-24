@@ -31,7 +31,7 @@ func (r HandOddsIteration) StrongestCombination() (*cards.Combination, error) {
 	
 	for i := 1; i < len(r.Combinations); i++ {
 		if r.Combinations[i].More(maxCombination) {
-			maxCombination = r.Combinations[0]
+			maxCombination = r.Combinations[i]
 		}
 	}
 	return &maxCombination, nil
