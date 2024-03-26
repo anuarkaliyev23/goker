@@ -241,7 +241,7 @@ func TestHandOddsResult_PlayerWins(t *testing.T) {
 			handOdds := generateHandOdds(2, 1000)
 			wins, err := handOdds.PlayerWins(0)
 			require.NoError(t, err)
-			require.True(t, *wins <= handOdds.Config.IterationsCount)
+			require.True(t, wins <= handOdds.Config.IterationsCount)
 		})
 
 		t.Run("KT vs AK", func(t *testing.T) {
@@ -284,24 +284,24 @@ func TestHandOddsResult_PlayerWins(t *testing.T) {
 			secondPlayerWins, err := handOddsResult.PlayerWins(1)
 			require.NoError(t, err)
 
-			require.Equal(t, 2, *firstPlayerWins)
-			require.Equal(t, 1, *secondPlayerWins)
+			require.Equal(t, 2, firstPlayerWins)
+			require.Equal(t, 1, secondPlayerWins)
 
 		})
 	})
 
 }
 
-func TestHandOddsIteration_Winners(t *testing.T) {
+func TestHandOddsIteration_Winner(t *testing.T) {
 	t.Run("negative", func(t *testing.T) {
 		t.Run("Empty combination list", func(t *testing.T) {
 			iteration := HandOddsIteration{
 				Combinations: []cards.Combination{},
 			}
-			winners, err := iteration.Winners()
+			winners, err := iteration.Winner()
 			
 			require.Error(t, err)
-			require.Nil(t, winners)
+			require.Equal(t, -1, winners)
 
 		})
 	})
@@ -333,10 +333,9 @@ func TestHandOddsIteration_Winners(t *testing.T) {
 				Combinations: []cards.Combination{*strongest, *weakest},
 			}
 			
-			winners, err := iteration.Winners()
+			winner, err := iteration.Winner()
 			require.NoError(t, err)
-			require.Equal(t, len(winners), 1)
-			require.Equal(t, winners[0], 0)
+			require.Equal(t, 0, winner)
 		})
 
 		t.Run("AAKK8 vs AAAKK8 vs AAKK7", func(t *testing.T) {
@@ -377,11 +376,9 @@ func TestHandOddsIteration_Winners(t *testing.T) {
 				Combinations: []cards.Combination{*strongest, *weakest, *tie},
 			}
 			
-			winners, err := iteration.Winners()
+			winner, err := iteration.Winner()
 			require.NoError(t, err)
-			require.Equal(t, 2, len(winners))
-			require.Equal(t, []int{0, 1}, winners)
-
+			require.Equal(t, -1, winner)
 		})
 	})
 }

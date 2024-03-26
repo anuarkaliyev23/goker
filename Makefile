@@ -3,4 +3,5 @@ test:
 	go test ./... 
 
 build:
+	go clean -cache
 	go build

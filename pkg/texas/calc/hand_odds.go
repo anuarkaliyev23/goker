@@ -37,7 +37,7 @@ func (r HandOddsIteration) StrongestCombination() (*cards.Combination, error) {
 	return &maxCombination, nil
 }
 
-func (r HandOddsIteration) Winners() ([]int, error) {
+func (r HandOddsIteration) playersWithStrongestCombinations() ([]int, error) {
 	winner, err := r.StrongestCombination()
 	if err != nil {
 		return nil, err
@@ -54,31 +54,67 @@ func (r HandOddsIteration) Winners() ([]int, error) {
 	return winners, nil
 }
 
+func (r HandOddsIteration) Winner() (int, error) {
+	winners, err := r.playersWithStrongestCombinations()
+	if err != nil {
+		return -1, err
+	}
+
+	if len(winners) > 1 {
+		return -1, nil 
+	}
+
+	return winners[0], nil
+}
+
+func (r HandOddsIteration) IsTie() (bool, error) {
+	winner, err := r.Winner()
+	if err != nil {
+		return false, err
+	}
+
+	if winner != -1 {
+		return false, nil
+	}
+
+	winners, err := r.playersWithStrongestCombinations()
+	if err != nil {
+		return false, err
+	}
+
+	if len(winners) == len(r.Combinations) {
+		return true, nil
+	}
+
+	return false,nil
+}
+
 type HandOddsResult struct {
 	Config HandOddsConfig
 	Iterations []HandOddsIteration
 }
 
-func (r HandOddsResult) PlayerWins(index int) (*int, error) {
-	winners := lo.Map(r.Iterations, func(iteration HandOddsIteration, _ int) []int {
-		w, err := iteration.Winners()
-		if err != nil {
-			return nil
-		}
+func (r HandOddsResult) PlayerWins(index int) (int, error) {
+	winners := lo.Map(r.Iterations, func(iteration HandOddsIteration, _ int) int {
+		w, _ := iteration.Winner()
 		return w
 	})
 
-	for i, v := range winners {
-		if v == nil {
-			return nil, fmt.Errorf("Cannot decide winner for iteration {%d}, error in calculations", i)
-		}
-	}
-
-	wins := lo.CountBy(winners, func(slice []int) bool {
-		return lo.Contains(slice, index)
+	wins := lo.CountBy(winners, func(player int) bool {
+		return index == player
 	})
 	
-	return &wins, nil
+	return wins, nil
+}
+
+func (r HandOddsResult) Ties() (int, error) {
+	toTies := lo.Map(r.Iterations, func(iteration HandOddsIteration, _ int) bool {
+		tie, _ := iteration.IsTie()
+		return tie
+	})
+
+	ties := lo.Count(toTies, true)
+	return ties, nil
 }
 
 func (r HandOddsResult) NumberOfPlayers() int {

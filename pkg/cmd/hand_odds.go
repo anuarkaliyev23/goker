@@ -18,41 +18,65 @@ var handOddsCmd = &cobra.Command{
 	Use: "hand-odds",
 	Short: "compare hand odds with optional board",
 	RunE: func(c *cobra.Command, args []string) error {
-		boardCards, err := utils.ParseCards(boardFlag)
+		handOdds, err := handOdds(boardFlag, handsFlag, iterationsFlag)
+		if err != nil {
+			return err
+		}
+		
+		playersWins, err := countPlayerWins(handOdds, handsFlag)
+		if err != nil {
+			return err
+		}
+		for player := 0; player < len(playersWins); player++ {
+			fmt.Println(fmt.Sprintf("[%v]: %d", handsFlag[player], playersWins[player]))
+		}
+
+		ties, err := handOdds.Ties()
 		if err != nil {
 			return err
 		}
 
-		hands := lo.Map(handsFlag, func(representation string, _ int) []cards.Card {
-			cards, err := utils.ParseCards(representation)
-			if err != nil {
-				return nil
-			}
-
-			return cards
-		})
-
-		handOddsConfig := calc.HandOddsConfig{
-			Board: boardCards,
-			Hands: hands,
-			IterationsCount: iterationsFlag,
-		}
-	
-		handOdds, err := calc.HandOdds(handOddsConfig)
-		if err != nil {
-			return err
-		}
-
-		for player := 0; player < len(handsFlag); player++ {
-			wins, err := handOdds.PlayerWins(player)
-			if err != nil {
-				return err
-			}
-
-			fmt.Println(fmt.Sprintf("Player[%d]: %d", player, wins))
-		}
+		fmt.Println(fmt.Sprintf("Ties: %d", ties))
 		return nil
 	},
+}
+
+func handOdds(boardRepresentation string, handsRepresentation []string, iterations int) (*calc.HandOddsResult, error) {
+	boardCards, err := utils.ParseCards(boardRepresentation)
+	if err != nil {
+		return nil, err
+	}
+
+	hands := lo.Map(handsRepresentation, func(representation string, _ int) []cards.Card {
+		cards, err := utils.ParseCards(representation)
+		if err != nil {
+			return nil
+		}
+
+		return cards
+	})
+
+	handOddsConfig := calc.HandOddsConfig{
+		Board: boardCards,
+		Hands: hands,
+		IterationsCount: iterations,
+	}
+
+	return calc.HandOdds(handOddsConfig)
+}
+
+func countPlayerWins(handOdds *calc.HandOddsResult, handsRepresentation []string) ([]int, error) {
+	result := []int{}
+
+	for player := 0; player < len(handsRepresentation); player++ {
+		wins, err := handOdds.PlayerWins(player)
+		if err != nil {
+			return nil, err
+		}
+		
+		result = append(result, wins)
+	}
+	return result, nil
 }
 
 func init() {
