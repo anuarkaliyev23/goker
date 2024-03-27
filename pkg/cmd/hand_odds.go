@@ -18,25 +18,32 @@ var handOddsCmd = &cobra.Command{
 	Use: "hand-odds",
 	Short: "compare hand odds with optional board",
 	RunE: func(c *cobra.Command, args []string) error {
-		handOdds, err := handOdds(boardFlag, handsFlag, iterationsFlag)
-		if err != nil {
-			return err
-		}
-		
-		playersWins, err := countPlayerWins(handOdds, handsFlag)
-		if err != nil {
-			return err
-		}
-		for player := 0; player < len(playersWins); player++ {
-			fmt.Println(fmt.Sprintf("[%v]: %d", handsFlag[player], playersWins[player]))
-		}
+		err, executionDuration := utils.MeasureTime(func() error {
+			handOdds, err := handOdds(boardFlag, handsFlag, iterationsFlag)
+			if err != nil {
+				return err
+			}
+			
+			playersWins, err := countPlayerWins(handOdds, handsFlag)
+			if err != nil {
+				return err
+			}
+			for player := 0; player < len(playersWins); player++ {
+				fmt.Println(fmt.Sprintf("[%v]: %d", handsFlag[player], playersWins[player]))
+			}
 
-		ties, err := handOdds.Ties()
+			ties, err := handOdds.Ties()
+			if err != nil {
+				return err
+			}
+
+			fmt.Println(fmt.Sprintf("Ties: %d", ties))
+			return nil
+		})
 		if err != nil {
 			return err
 		}
-
-		fmt.Println(fmt.Sprintf("Ties: %d", ties))
+		fmt.Printf("%d ms\n", executionDuration)
 		return nil
 	},
 }
