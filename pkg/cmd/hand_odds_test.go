@@ -55,5 +55,6 @@ func Test_handOdds(t *testing.T) {
 			card, err := cards.NewCard(cards.Seven, cards.Spades)
 			return *card, err
 		})))
+
 	})
 }

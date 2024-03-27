@@ -21,6 +21,7 @@ type HandOddsConfig struct {
 
 type HandOddsIteration struct {
 	Combinations []cards.Combination
+	Board []cards.Card
 }
 
 func (r HandOddsIteration) StrongestCombination() (*cards.Combination, error) {
@@ -163,30 +164,17 @@ func HandOdds(config HandOddsConfig) (*HandOddsResult, error) {
 	}, nil
 }
 
-func iterate(hands [][]cards.Card, board []cards.Card) (*HandOddsIteration, error) {
-	deck := cards.NewFullDeck()
-	deck.Shuffle()
-
-	if len(hands) > ((cards.ValidDeckSize - CommunityCardsCount - BurnCardsCount) / HoleCardsCount) {
-		return nil, fmt.Errorf("Too many players {%d}", len(hands))
-	}
-
-	containedInvaludHands := lo.SomeBy(hands, func(hand []cards.Card) bool {
-		return len(hand) != HoleCardsCount
-	})
-
-	if containedInvaludHands {
-		return nil, fmt.Errorf("Cannot construct iteration for hand of invalid size, should be {%d}", HoleCardsCount)
-	}
-
+func collectExcludedCards(board []cards.Card, hands [][]cards.Card) []cards.Card {
 	excludedCards := board
 
 	lo.ForEach(hands, func(hand []cards.Card , _ int) {
-		lo.ForEach(hand, func(card cards.Card, _ int) {
-			excludedCards = append(excludedCards, card)
-		})
+		excludedCards = append(excludedCards, hand...)
 	})
 
+	return excludedCards
+}
+
+func excludeCards(deck cards.Deck, excludedCards []cards.Card) cards.Deck {
 	lo.ForEach(excludedCards, func(card cards.Card, _ int) {
 		err := deck.MoveToDrawn(card)
 		if err != nil {
@@ -195,32 +183,73 @@ func iterate(hands [][]cards.Card, board []cards.Card) (*HandOddsIteration, erro
 		}
 	})
 
-	combinations := lo.Map(hands, func(cs []cards.Card, _ int) cards.Combination  {
-		usedCards := cs
-		usedCards = append(usedCards, board...)
-		
-		leftCards := CardsUsedInTexasHoldem - len(hands)
-		for i := 0; i < leftCards; i++ {
-			drawnCard, err := deck.Draw()
-			if err != nil {
-				//This should never happen
-				panic(err)
-			}
+	return deck
+}
 
-			usedCards = append(usedCards, *drawnCard)
-		}
+func validateIteration(hands [][]cards.Card, board []cards.Card) error {
+	if len(hands) > ((cards.ValidDeckSize - CommunityCardsCount - BurnCardsCount) / HoleCardsCount) {
+		return fmt.Errorf("Too many players {%d}", len(hands))
+	}
 
-		combination, err := cards.StrongestCombinationOf(usedCards)
+	containedInvaludHands := lo.SomeBy(hands, func(hand []cards.Card) bool {
+		return len(hand) != HoleCardsCount
+	})
+
+	if containedInvaludHands {
+		return fmt.Errorf("Cannot construct iteration for hand of invalid size, should be {%d}", HoleCardsCount)
+	}
+
+	return nil
+}
+
+func drawCommunityCards(deck cards.Deck, board []cards.Card) (cards.Deck, []cards.Card) {
+	cardsToDrawCount := CardsUsedInTexasHoldem - HoleCardsCount - len(board)
+	drawnCards := []cards.Card{}
+	for i := 0; i < cardsToDrawCount; i++ {
+		drawnCard, err := deck.Draw()
 		if err != nil {
-			//This should never happen
+			//This should never happen 
 			panic(err)
 		}
-		
-		return *combination
+		drawnCards = append(drawnCards, *drawnCard)
+	}
+	return deck, drawnCards
+}
+
+func strongestHandCombination(hand []cards.Card, board []cards.Card, extraCommunityCards []cards.Card) cards.Combination {
+	usedCards := []cards.Card{}
+	usedCards = append(usedCards, hand...)
+	usedCards = append(usedCards, board...)
+	usedCards = append(usedCards, extraCommunityCards...)
+
+	combination, err := cards.StrongestCombinationOf(usedCards)
+	if err != nil {
+		//This should never happen
+		panic(err)
+	}
+	return *combination
+}
+
+func iterate(hands [][]cards.Card, board []cards.Card) (*HandOddsIteration, error) {
+	deck := cards.NewFullDeck()
+	deck.Shuffle()
+
+	err := validateIteration(hands, board)
+	if err != nil {
+		return nil, err
+	}
+	
+	excludedCards := collectExcludedCards(board, hands)
+	deck = excludeCards(deck, excludedCards)
+	deck, extraCommunityCards := drawCommunityCards(deck, board)
+	
+	combinations := lo.Map(hands, func(cs []cards.Card, _ int) cards.Combination {
+		return strongestHandCombination(cs, board, extraCommunityCards)
 	})
 
 	iteration := HandOddsIteration {
 		Combinations: combinations,
+		Board: append(board, extraCommunityCards...),
 	}
 
 	return &iteration, nil

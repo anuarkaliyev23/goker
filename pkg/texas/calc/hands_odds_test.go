@@ -68,6 +68,52 @@ func card(face cards.Face, suit cards.Suit) cards.Card {
 	return *card
 }
 
+func Test_strongestHandCombination(t *testing.T) {
+	t.Run("positive", func(t *testing.T) {
+		t.Run("hand: AsAd, board: AhThKs, extra: Ts8h", func(t *testing.T) {
+			hand := []cards.Card{card(cards.Ace, cards.Spades), card(cards.Ace, cards.Diamonds)}
+			board := []cards.Card{card(cards.Ace, cards.Hearts), card(cards.Ten, cards.Hearts), card(cards.King, cards.Spades)}
+			extra := []cards.Card{card(cards.Ten, cards.Spades), card(cards.Eight, cards.Hearts)}
+	
+			combination := strongestHandCombination(hand, board, extra)
+			require.Equal(t, cards.FullHouse, combination.Type())
+			require.Equal(t, cards.Ace, combination.MainCard())
+			require.Equal(t, cards.Ten, *combination.SecondaryCard())
+		})
+
+		t.Run("hand: AsAd, board: 8s8h8d8c, extra: Qs", func(t *testing.T) {
+			hand := []cards.Card{card(cards.Ace, cards.Spades), card(cards.Ace, cards.Diamonds)}
+			board := []cards.Card{
+				card(cards.Eight, cards.Spades), 
+				card(cards.Eight, cards.Hearts), 
+				card(cards.Eight, cards.Diamonds),
+				card(cards.Eight, cards.Clubs),
+			}
+			extra := []cards.Card{card(cards.Queen, cards.Spades)}
+
+			combination := strongestHandCombination(hand, board, extra)
+			require.Equal(t, cards.FourOfAKind, combination.Type())
+			require.Equal(t, cards.Ace, combination.Kickers()[0].Face())
+		})
+
+		t.Run("hand: AsAd, board: 8s8h8d8cQs, extra: (empty)", func(t *testing.T) {
+			hand := []cards.Card{card(cards.Ace, cards.Spades), card(cards.Ace, cards.Diamonds)}
+			board := []cards.Card{
+				card(cards.Eight, cards.Spades), 
+				card(cards.Eight, cards.Hearts), 
+				card(cards.Eight, cards.Diamonds),
+				card(cards.Eight, cards.Clubs),
+				card(cards.Queen, cards.Spades),
+			}
+			extra := []cards.Card{}
+
+			combination := strongestHandCombination(hand, board, extra)
+			require.Equal(t, cards.FourOfAKind, combination.Type())
+			require.Equal(t, cards.Ace, combination.Kickers()[0].Face())
+		})
+	})
+}
+
 func TestHandsResult_PlayerCombinations(t *testing.T) {
 	t.Run("positive", func(t *testing.T) {
 		t.Run("2 odds, no board", func(t *testing.T) {
