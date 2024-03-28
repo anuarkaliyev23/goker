@@ -51,6 +51,7 @@ func (r Combination) AllCards() []Card {
 	return r.cards
 }
 
+//TODO add short-deck fullhouse/flush override
 func (r Combination) Type() CombinationType {
 	if r.isStraightFlush() {
 		return StraghtFlush

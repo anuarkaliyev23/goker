@@ -97,7 +97,6 @@ func countPlayerWins(handOdds *calc.HandOddsResult, handsRepresentation []string
 }
 
 func init() {
-	//TODO figure out flags
 	handOddsCmd.Flags().StringVar(&boardFlag, "board", "", "used to pass community/board cards")
 	handOddsCmd.Flags().StringSliceVarP(&handsFlag, "hands", "", nil, "used to pass hole/hand cards")
 	handOddsCmd.Flags().IntVarP(&iterationsFlag, "iterations", "i", 1000, "how much iterations should simulation have")
