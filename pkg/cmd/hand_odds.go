@@ -6,6 +6,7 @@ import (
 	"github.com/anuarkaliyev23/goker/pkg/cards"
 	utils "github.com/anuarkaliyev23/goker/pkg/cmd/utils"
 	"github.com/anuarkaliyev23/goker/pkg/texas/calc"
+	"github.com/fatih/color"
 	"github.com/samber/lo"
 	"github.com/spf13/cobra"
 )
@@ -24,26 +25,35 @@ var handOddsCmd = &cobra.Command{
 				return err
 			}
 			
-			playersWins, err := countPlayerWins(handOdds, handsFlag)
+			playersWins, err := handOdds.WinRates()
 			if err != nil {
 				return err
 			}
+			
+			wonPlayer := lo.Max(playersWins)
+			wonPlayerIndex := lo.IndexOf(playersWins, wonPlayer)
+
 			for player := 0; player < len(playersWins); player++ {
-				fmt.Println(fmt.Sprintf("[%v]: %d", handsFlag[player], playersWins[player]))
+				s := fmt.Sprintf("[%v]: %.1f%%", handsFlag[player], playersWins[player] * 100)
+				if player == wonPlayerIndex {
+					color.Green(s)
+				} else {
+					color.Red(s)
+				}
 			}
 
-			ties, err := handOdds.Ties()
+			ties, err := handOdds.TiePercentage()
 			if err != nil {
 				return err
 			}
 
-			fmt.Println(fmt.Sprintf("Ties: %d", ties))
+			color.Yellow(fmt.Sprintf("Ties: %.1f%%", ties * 100))
 			return nil
 		})
 		if err != nil {
 			return err
 		}
-		fmt.Printf("%d ms\n", executionDuration)
+		color.White(fmt.Sprintf("%d ms\n", executionDuration))
 		return nil
 	},
 }

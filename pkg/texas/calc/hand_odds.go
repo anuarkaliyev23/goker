@@ -108,6 +108,52 @@ func (r HandOddsResult) PlayerWins(index int) (int, error) {
 	return wins, nil
 }
 
+func (r HandOddsResult) AllPlayerWins() ([]int, error) {
+	wins := []int{}
+	for i := 0; i < r.NumberOfPlayers(); i++ {
+		w, err := r.PlayerWins(i)
+		if err != nil {
+			return nil, err 
+		}
+		wins = append(wins, w)
+	}
+
+	return wins, nil
+}
+
+func (r HandOddsResult) WinRates() ([]float32, error) {
+	wins, err := r.AllPlayerWins()
+	if err != nil {
+		return nil, err
+	}
+
+	winRates := lo.Map(wins, func(w int, _ int) float32 {
+		return float32(w) / float32(r.Config.IterationsCount)
+	})
+
+	return winRates, nil
+}
+
+func (r HandOddsResult) TiePercentage() (float32, error) {
+	ties, err := r.Ties()
+	if err != nil {
+		return 0.0, err
+	}
+
+	return float32(ties) / float32(r.Config.IterationsCount), nil
+}
+
+func (r HandOddsResult) WinningPlayer() (int, error) {
+	allPlayerWins, err := r.AllPlayerWins()
+	if err != nil {
+		return 0, nil
+	}
+	maxWins := lo.Max(allPlayerWins)
+	maxIndex := lo.IndexOf(allPlayerWins, maxWins)
+	return maxIndex, nil
+}
+
+
 func (r HandOddsResult) Ties() (int, error) {
 	toTies := lo.Map(r.Iterations, func(iteration HandOddsIteration, _ int) bool {
 		tie, _ := iteration.IsTie()
