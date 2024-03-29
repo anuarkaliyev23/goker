@@ -785,7 +785,7 @@ func TestCombination_Type(t *testing.T) {
 		require.Equal(t, flush.Type(), Flush)
 		require.Equal(t, fullHouse.Type(), FullHouse)
 		require.Equal(t, fourOfAKind.Type(), FourOfAKind)
-		require.Equal(t, straightFlush.Type(), StraghtFlush)
+		require.Equal(t, straightFlush.Type(), StraightFlush)
 	})
 }
 

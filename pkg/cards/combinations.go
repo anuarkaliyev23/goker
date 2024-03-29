@@ -26,11 +26,14 @@ const (
 	Flush
 	FullHouse
 	FourOfAKind
-	StraghtFlush
+	StraightFlush
 )
 
+var ShortDeckCombinationStrength = []CombinationType{HighCard, Pair, TwoPair, ThreeOfAKind, Straight, FullHouse, Flush, FourOfAKind, StraightFlush}
+var DefaultCombinationStrength = []CombinationType{HighCard, Pair, TwoPair, ThreeOfAKind, Straight, Flush, FullHouse, FourOfAKind, StraightFlush}
+
 func comparedByHighestCard(ctype CombinationType) bool {
-	return ctype == StraghtFlush || ctype == Straight || ctype == Flush || ctype == HighCard
+	return ctype == StraightFlush || ctype == Straight || ctype == Flush || ctype == HighCard
 }
 
 
@@ -45,6 +48,7 @@ func comparedByKickers(ctype CombinationType) bool {
 
 type Combination struct {
 	cards []Card
+	combinationStrengths []CombinationType
 }
 
 func (r Combination) AllCards() []Card {
@@ -53,8 +57,9 @@ func (r Combination) AllCards() []Card {
 
 //TODO add short-deck fullhouse/flush override
 func (r Combination) Type() CombinationType {
+
 	if r.isStraightFlush() {
-		return StraghtFlush
+		return StraightFlush
 	} else if r.isFourOfAKind() {
 		return FourOfAKind
 	} else if r.isFullHouse() {
@@ -72,6 +77,21 @@ func (r Combination) Type() CombinationType {
 	} else {
 		return HighCard
 	}
+}
+
+func (r Combination) typeToFunction() map[CombinationType]func () bool {
+	result := map[CombinationType]func() bool{}
+	result[HighCard] = r.isHighCard
+	result[Pair] = r.isPair
+	result[TwoPair] = r.isTwoPair
+	result[ThreeOfAKind] = r.isThreeOfAKind
+	result[Straight] = r.isStraight
+	result[Flush] = r.isFlush
+	result[FullHouse] = r.isFullHouse
+	result[FourOfAKind] = r.isFourOfAKind
+	result[StraightFlush] = r.isStraightFlush
+
+	return result
 }
 
 func (r Combination) HighestCardFace() Face {
@@ -291,10 +311,24 @@ func (r Combination) More(other Combination) bool {
 	return other.Less(r)
 }
 
+func (r Combination) CombinationStrengths() []CombinationType {
+	if r.combinationStrengths == nil {
+		return DefaultCombinationStrength
+	} else {
+		return r.combinationStrengths
+	}
+}
+
+func (r Combination) lessByType(first CombinationType, second CombinationType) bool {
+	firstIndex := lo.IndexOf(r.CombinationStrengths(), first)
+	secondIndex := lo.IndexOf(r.CombinationStrengths(), second)
+	return firstIndex < secondIndex
+}
+
 func (r Combination) Less(other Combination) bool {
 	combinations := []Combination{r, other}
 
-	if r.Type() < other.Type() {
+	if r.lessByType(r.Type(), other.Type()) {
 		return true
 	} else if r.Type() == other.Type() {
 		if r.MainCard() < other.MainCard() {
@@ -365,16 +399,23 @@ func lessByKickers(combinations []Combination) bool {
 
 
 func NewCombination(cards []Card) (*Combination, error) {
+	return NewCombinationWithCombinationStrength(cards, DefaultCombinationStrength)
+}
+
+func NewShortDeckCombination(cards []Card) (*Combination, error) {
+	return NewCombinationWithCombinationStrength(cards, ShortDeckCombinationStrength)
+}
+
+func NewCombinationWithCombinationStrength(cards []Card, combinationStrengths []CombinationType) (*Combination, error) {
 	sort.Sort(ByFace(cards))
 	if len(cards) == validCardsLength {
 		uniques := lo.Uniq(cards)
 		if len(uniques) != validCardsLength {
 			return nil, errors.New("cannot construct combination with not unique cards")
 		}
-		return &Combination{cards: cards}, nil
+		return &Combination{cards: cards, combinationStrengths: combinationStrengths}, nil
 	} else {
 		return nil, fmt.Errorf("cannot construct a combination you must pass slice of size: %d", validCardsLength)
-
 	}
 }
 
