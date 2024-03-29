@@ -2174,3 +2174,30 @@ func TestStrongestCombinationOf(t *testing.T) {
 		})
 	})
 }
+
+func TestShortDeckCombinations(t *testing.T) {
+	t.Run("Short Deck Flush vs FullHouse", func(t *testing.T) {
+			more := Combination {
+				cards: []Card {
+					{face: Six, suit: Diamonds},
+					{face: King, suit: Diamonds},
+					{face: Queen, suit: Diamonds},
+					{face: Eight, suit: Diamonds},
+					{face: Jack, suit: Diamonds},
+				},
+				combinationStrengths: ShortDeckCombinationStrength,
+			}
+			less := Combination { 
+				cards: []Card {
+					{face: King, suit: Hearts},
+					{face: King, suit: Diamonds},
+					{face: King, suit: Spades},
+					{face: Seven, suit: Clubs},
+					{face: Seven, suit: Spades},
+				},
+				combinationStrengths: ShortDeckCombinationStrength,
+			}
+
+			require.True(t, less.Less(more))
+	})
+}

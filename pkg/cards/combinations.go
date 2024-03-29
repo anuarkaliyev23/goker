@@ -55,7 +55,10 @@ func (r Combination) AllCards() []Card {
 	return r.cards
 }
 
-//TODO add short-deck fullhouse/flush override
+//TODO Known issue: This function will perform ok with short-deck vs classic since the only difference is flush/full house strength
+//since it's impossible to have both at the same time. However, if other custom rules for strength will be passed (as design suggests) 
+//there can be issues with the order of combination type resolving.
+//For some reason I couldn't fix it right away, so I will postpone resolving this issue if it will come up some time after
 func (r Combination) Type() CombinationType {
 
 	if r.isStraightFlush() {
@@ -77,21 +80,6 @@ func (r Combination) Type() CombinationType {
 	} else {
 		return HighCard
 	}
-}
-
-func (r Combination) typeToFunction() map[CombinationType]func () bool {
-	result := map[CombinationType]func() bool{}
-	result[HighCard] = r.isHighCard
-	result[Pair] = r.isPair
-	result[TwoPair] = r.isTwoPair
-	result[ThreeOfAKind] = r.isThreeOfAKind
-	result[Straight] = r.isStraight
-	result[Flush] = r.isFlush
-	result[FullHouse] = r.isFullHouse
-	result[FourOfAKind] = r.isFourOfAKind
-	result[StraightFlush] = r.isStraightFlush
-
-	return result
 }
 
 func (r Combination) HighestCardFace() Face {
