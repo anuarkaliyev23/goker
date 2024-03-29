@@ -24,6 +24,30 @@ Ties: 22.2%
 1041 ms
 ```
 
+## Roadmap
+
+Technical Stuff:
+
+- [ ] Add Benchmarks for combination calculations
+
+Features:
+
+- [ ] Hand-Odds calculations
+    - [x] Texas Hold'em
+    - [ ] Omaha
+    - [ ] Short-Deck
+- [ ] Event Possibilities
+    - [ ] Draw a specific combination
+        - [ ] Texas Hold'em
+        - [ ] Omaha
+        - [ ] Short-Deck
+
+## Useful Links:
+
+- [awesome-poker](https://github.com/apehex/awesome-poker/tree/master)
+- [Basic poker odds and outs](https://www.cardplayer.com/poker-tools/odds-and-outs)
+- [hand-odds](https://github.com/CookPete/poker-odds)
+
 ## Developer Notes
 
 ### Build
