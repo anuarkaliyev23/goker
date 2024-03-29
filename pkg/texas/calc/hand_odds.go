@@ -233,7 +233,7 @@ func excludeCards(deck cards.Deck, excludedCards []cards.Card) cards.Deck {
 }
 
 func validateIteration(hands [][]cards.Card, board []cards.Card) error {
-	if len(hands) > ((cards.ValidDeckSize - CommunityCardsCount - BurnCardsCount) / HoleCardsCount) {
+	if len(hands) > ((cards.FullDeckSize - CommunityCardsCount - BurnCardsCount) / HoleCardsCount) {
 		return fmt.Errorf("Too many players {%d}", len(hands))
 	}
 
