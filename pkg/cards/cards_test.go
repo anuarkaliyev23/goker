@@ -77,12 +77,20 @@ func TestNewDeck(t *testing.T) {
 				toFaces := lo.Map(cards, func(c Card, _ int) Face {
 					return c.Face()
 				})
-				//TODO figure out why test fails. Debug showing valid Short-Deck
 				require.NotContains(t, toFaces, Two)
 				require.NotContains(t, toFaces, Three)
 				require.NotContains(t, toFaces, Four)
 				require.NotContains(t, toFaces, Five)
-				require.NotContains(t, toFaces, Six)
+
+				require.Contains(t, toFaces, Six)
+				require.Contains(t, toFaces, Seven)
+				require.Contains(t, toFaces, Eight)
+				require.Contains(t, toFaces, Nine)
+				require.Contains(t, toFaces, Ten)
+				require.Contains(t, toFaces, Jack)
+				require.Contains(t, toFaces, Queen)
+				require.Contains(t, toFaces, King)
+				require.Contains(t, toFaces, Ten)
 			})
 		})
 
