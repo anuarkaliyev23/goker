@@ -2,4 +2,4 @@
 
 COMMIT_MSG_FILE=$1
 
-echo "$(git rev-parse --abbrev-ref HEAD)" >> ${COMMIT_MSG_FILE}
+echo "$(git rev-parse --abbrev-ref HEAD)\n" >> ${COMMIT_MSG_FILE}
