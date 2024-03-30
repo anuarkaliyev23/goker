@@ -5,7 +5,7 @@ import (
 
 	"github.com/anuarkaliyev23/goker/pkg/cards"
 	utils "github.com/anuarkaliyev23/goker/pkg/cmd/utils"
-	"github.com/anuarkaliyev23/goker/pkg/texas/calc"
+	"github.com/anuarkaliyev23/goker/pkg/calc"
 	"github.com/fatih/color"
 	"github.com/samber/lo"
 	"github.com/spf13/cobra"
