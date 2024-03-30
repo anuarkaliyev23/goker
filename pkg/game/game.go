@@ -28,6 +28,10 @@ type Config struct {
 	MaxPlayers int
 }
 
+func (r Config) CardsUsedForPlayer() int {
+	return r.HoleCardsCount + r.CommunityCardsCount
+}
+
 func NewCustomConfig(
 		deckGenerator func() cards.Deck,
 		holeCardsCount, 

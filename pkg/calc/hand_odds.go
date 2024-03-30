@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/anuarkaliyev23/goker/pkg/cards"
+	"github.com/anuarkaliyev23/goker/pkg/game"
 	"github.com/samber/lo"
 )
 
@@ -17,6 +18,7 @@ type HandOddsConfig struct {
 	Hands [][]cards.Card
 	Board []cards.Card
 	IterationsCount int
+	GameConfig game.Config
 }
 
 type HandOddsIteration struct {
@@ -196,7 +198,7 @@ func HandOdds(config HandOddsConfig) (*HandOddsResult, error) {
 	iterations := []HandOddsIteration{}
 	
 	for i := 0; i < config.IterationsCount; i++ {
-		iteration, err := iterate(config.Hands, config.Board)
+		iteration, err := iterate(config.Hands, config.Board, config.GameConfig)
 		if err != nil {
 			return nil, err 
 		}
@@ -248,10 +250,10 @@ func validateIteration(hands [][]cards.Card, board []cards.Card) error {
 	return nil
 }
 
-func drawCommunityCards(deck cards.Deck, board []cards.Card) (cards.Deck, []cards.Card) {
-	cardsToDrawCount := CardsUsedInTexasHoldem - HoleCardsCount - len(board)
+func drawCommunityCards(deck cards.Deck, board []cards.Card, maxCommunityCards int) (cards.Deck, []cards.Card) {
+	cardsToDraw := maxCommunityCards - len(board)
 	drawnCards := []cards.Card{}
-	for i := 0; i < cardsToDrawCount; i++ {
+	for i := 0; i < cardsToDraw; i++ {
 		drawnCard, err := deck.Draw()
 		if err != nil {
 			//This should never happen 
@@ -276,7 +278,7 @@ func strongestHandCombination(hand []cards.Card, board []cards.Card, extraCommun
 	return *combination
 }
 
-func iterate(hands [][]cards.Card, board []cards.Card) (*HandOddsIteration, error) {
+func iterate(hands [][]cards.Card, board []cards.Card, gameConfig game.Config) (*HandOddsIteration, error) {
 	deck := cards.NewFullDeck()
 	deck.Shuffle()
 
@@ -287,7 +289,8 @@ func iterate(hands [][]cards.Card, board []cards.Card) (*HandOddsIteration, erro
 	
 	excludedCards := collectExcludedCards(board, hands)
 	deck = excludeCards(deck, excludedCards)
-	deck, extraCommunityCards := drawCommunityCards(deck, board)
+	deck, extraCommunityCards := drawCommunityCards(deck, board, gameConfig.CommunityCardsCount)
+
 	
 	combinations := lo.Map(hands, func(cs []cards.Card, _ int) cards.Combination {
 		return strongestHandCombination(cs, board, extraCommunityCards)

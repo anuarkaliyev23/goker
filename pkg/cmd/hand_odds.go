@@ -3,9 +3,10 @@ package cmd
 import (
 	"fmt"
 
+	"github.com/anuarkaliyev23/goker/pkg/calc"
 	"github.com/anuarkaliyev23/goker/pkg/cards"
 	utils "github.com/anuarkaliyev23/goker/pkg/cmd/utils"
-	"github.com/anuarkaliyev23/goker/pkg/calc"
+	"github.com/anuarkaliyev23/goker/pkg/game"
 	"github.com/fatih/color"
 	"github.com/samber/lo"
 	"github.com/spf13/cobra"
@@ -20,7 +21,7 @@ var handOddsCmd = &cobra.Command{
 	Short: "compare hand odds with optional board",
 	RunE: func(c *cobra.Command, args []string) error {
 		err, executionDuration := utils.MeasureTime(func() error {
-			handOdds, err := handOdds(boardFlag, handsFlag, iterationsFlag)
+			handOdds, err := handOdds(boardFlag, handsFlag, iterationsFlag, game.NewTexasConfig())
 			if err != nil {
 				return err
 			}
@@ -58,7 +59,7 @@ var handOddsCmd = &cobra.Command{
 	},
 }
 
-func handOdds(boardRepresentation string, handsRepresentation []string, iterations int) (*calc.HandOddsResult, error) {
+func handOdds(boardRepresentation string, handsRepresentation []string, iterations int, gameConfig game.Config) (*calc.HandOddsResult, error) {
 	boardCards, err := utils.ParseCards(boardRepresentation)
 	if err != nil {
 		return nil, err
@@ -77,6 +78,7 @@ func handOdds(boardRepresentation string, handsRepresentation []string, iteratio
 		Board: boardCards,
 		Hands: hands,
 		IterationsCount: iterations,
+		GameConfig: gameConfig,
 	}
 
 	return calc.HandOdds(handOddsConfig)

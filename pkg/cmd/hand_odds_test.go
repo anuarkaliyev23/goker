@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/anuarkaliyev23/goker/pkg/cards"
+	"github.com/anuarkaliyev23/goker/pkg/game"
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/require"
 )
@@ -22,7 +23,7 @@ func Test_handOdds(t *testing.T) {
 		hands := []string{"KsKd", "7s7d"}
 		iterations := 10
 
-		odds, err := handOdds(board, hands, iterations)
+		odds, err := handOdds(board, hands, iterations, game.NewTexasConfig())
 		require.NoError(t, err)
 		require.Equal(t, 10, odds.Config.IterationsCount)
 		require.Equal(t, 2, odds.NumberOfPlayers())

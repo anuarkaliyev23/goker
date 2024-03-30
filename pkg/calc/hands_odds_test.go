@@ -5,6 +5,7 @@ import (
 
 	"github.com/anuarkaliyev23/goker/pkg/cards"
 	cmd "github.com/anuarkaliyev23/goker/pkg/cmd/utils"
+	"github.com/anuarkaliyev23/goker/pkg/game"
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/require"
 )
@@ -50,6 +51,7 @@ func generateHandOdds(playersCount int, iterations int) HandOddsResult {
 	config := HandOddsConfig {
 		Hands: hands,
 		IterationsCount: iterations,
+		GameConfig: game.NewTexasConfig(),
 	}
 
 	odds, err := HandOdds(config)
@@ -139,6 +141,7 @@ func TestHandsResult_PlayerCombinations(t *testing.T) {
 		config := HandOddsConfig{
 			Hands: hands,
 			IterationsCount: iterationCount,
+			GameConfig: game.NewTexasConfig(),
 		}
 
 		odds, err := HandOdds(config)
@@ -157,6 +160,7 @@ func TestHandsOdds(t *testing.T) {
 		config := HandOddsConfig {
 			Hands: hands, 
 			IterationsCount: iterationCount,
+			GameConfig: game.NewTexasConfig(),
 		}
 
 		odds, err := HandOdds(config)
@@ -186,6 +190,7 @@ func TestHandsOdds(t *testing.T) {
 			config := HandOddsConfig{
 				Hands: hands,
 				IterationsCount: iterationCount,
+				GameConfig: game.NewTexasConfig(),
 			}
 			
 			result, err := HandOdds(config)
@@ -206,6 +211,7 @@ func TestHandsOdds(t *testing.T) {
 			config := HandOddsConfig{
 				Hands: hands,
 				IterationsCount: 1,
+				GameConfig: game.NewTexasConfig(),
 			}
 
 			result, err := HandOdds(config)
@@ -220,6 +226,7 @@ func TestHandsOdds(t *testing.T) {
 			config := HandOddsConfig {
 				Hands: hands, 
 				IterationsCount: iterationCount,
+				GameConfig: game.NewTexasConfig(),
 			}
 
 			odds, err := HandOdds(config)
@@ -320,6 +327,7 @@ func TestHandOddsResult_PlayerWins(t *testing.T) {
 						{card(cards.Ace, cards.Hearts), card(cards.King, cards.Hearts)},
 					},
 					Board: []cards.Card{},
+					GameConfig: game.NewTexasConfig(),
 				},
 				Iterations: []HandOddsIteration{iteration_1, iteration_2, iteration_3},
 			}
