@@ -9,5 +9,5 @@ build:
 commit-check: test build
 
 hooks:
-	chmod +x .hooks/pre-commit
+	chmod +x .hooks/pre-push
 	git config core.hooksPath .hooks/
