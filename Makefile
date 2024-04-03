@@ -1,3 +1,5 @@
+BIN_FOLDER ?= bin/
+
 test:
 	go clean -testcache
 	go test ./... 
@@ -5,6 +7,9 @@ test:
 build:
 	go clean -cache
 	go build
+
+build-multiplatform:
+	./build.sh
 
 commit-check: test build
 
