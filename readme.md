@@ -9,19 +9,32 @@ This tool took heavy inspiration from [poker-odds](https://github.com/CookPete/p
 
 At this moment it can only be built from sources. See [build notes](#Build)
 
-### Texas Hold'em
+### Hand Odds calculation
 
-#### Hand Odds calculation
+#### Texas Hold'em
 
 ```shell
-goker texas hand-odds --hands KsTs,Kc9c --board KdKh8h -i 1000; 
+goker hand-odds --hands KsTh,8d7d --board KdTsTd2d -i 1000 --texas
 ```
 
 ```
-[KsTs]: 65.6%
-[Kc9c]: 12.2%
-Ties: 22.2%
-1041 ms
+[KsTh]: 100.0%
+[8d7d]: 0.0%
+Ties: 0.0%
+947 ms
+```
+
+#### Short-Deck
+
+```shell
+goker hand-odds --hands KsTh,8d7d --board KdTsTd2d -i 1000 --short-deck
+```
+
+```
+[KsTh]: 3.0%
+[8d7d]: 97.0%
+Ties: 0.0%
+953 ms
 ```
 
 ## Roadmap
@@ -35,7 +48,7 @@ Features:
 - [ ] Hand-Odds calculations
     - [x] Texas Hold'em
     - [ ] Omaha
-    - [ ] Short-Deck
+    - [x] Short-Deck
 - [ ] Event Possibilities
     - [ ] Draw a specific combination
         - [ ] Texas Hold'em
@@ -59,7 +72,7 @@ make build
 This command produces binary to root project folder and can be locally executed as:
 
 ```shell
-./goker texas hand-odds --hands KsTs,Kc9c --board KdKh8h -i 1000; 
+./goker hand-odds --hands KsTh,8d7d --board KdTsTd2d -i 1000 --texas
 ```
 
 
