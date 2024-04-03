@@ -38,7 +38,7 @@ func combinationOf(representation string) cards.Combination {
 		panic(err)
 	}
 	
-	combination, err := cards.NewCombination(cs)
+	combination, err := cards.NewDefaultCombination(cs)
 	if err != nil {
 		panic(err)
 	}
@@ -77,7 +77,7 @@ func Test_strongestHandCombination(t *testing.T) {
 			board := []cards.Card{card(cards.Ace, cards.Hearts), card(cards.Ten, cards.Hearts), card(cards.King, cards.Spades)}
 			extra := []cards.Card{card(cards.Ten, cards.Spades), card(cards.Eight, cards.Hearts)}
 	
-			combination := strongestHandCombination(hand, board, extra)
+			combination := strongestHandCombination(hand, board, extra, game.NewTexasConfig())
 			require.Equal(t, cards.FullHouse, combination.Type())
 			require.Equal(t, cards.Ace, combination.MainCard())
 			require.Equal(t, cards.Ten, *combination.SecondaryCard())
@@ -93,7 +93,7 @@ func Test_strongestHandCombination(t *testing.T) {
 			}
 			extra := []cards.Card{card(cards.Queen, cards.Spades)}
 
-			combination := strongestHandCombination(hand, board, extra)
+			combination := strongestHandCombination(hand, board, extra, game.NewTexasConfig())
 			require.Equal(t, cards.FourOfAKind, combination.Type())
 			require.Equal(t, cards.Ace, combination.Kickers()[0].Face())
 		})
@@ -109,7 +109,7 @@ func Test_strongestHandCombination(t *testing.T) {
 			}
 			extra := []cards.Card{}
 
-			combination := strongestHandCombination(hand, board, extra)
+			combination := strongestHandCombination(hand, board, extra, game.NewTexasConfig())
 			require.Equal(t, cards.FourOfAKind, combination.Type())
 			require.Equal(t, cards.Ace, combination.Kickers()[0].Face())
 		})
@@ -253,7 +253,7 @@ func TestHandOddsIteration_StrongestCombination(t *testing.T) {
 		t.Run("2 combinations", func(t *testing.T) {
 			t.Run("AAAAK vs AAAKK", func(t *testing.T) {
 
-				strongest, err := cards.NewCombination([]cards.Card{
+				strongest, err := cards.NewDefaultCombination([]cards.Card{
 						card(cards.Ace, cards.Clubs), 
 						card(cards.Ace, cards.Spades),
 						card(cards.Ace, cards.Diamonds), 
@@ -264,7 +264,7 @@ func TestHandOddsIteration_StrongestCombination(t *testing.T) {
 
 				require.NoError(t, err)
 
-				weakest, err := cards.NewCombination([]cards.Card{
+				weakest, err := cards.NewDefaultCombination([]cards.Card{
 						card(cards.Ace, cards.Clubs), 
 						card(cards.Ace, cards.Spades),
 						card(cards.Ace, cards.Diamonds), 
@@ -362,7 +362,7 @@ func TestHandOddsIteration_Winner(t *testing.T) {
 
 	t.Run("positive", func(t *testing.T) {
 		t.Run("AAAAK vs AAAKK", func(t *testing.T) {
-			strongest, err := cards.NewCombination([]cards.Card{
+			strongest, err := cards.NewDefaultCombination([]cards.Card{
 					card(cards.Ace, cards.Clubs), 
 					card(cards.Ace, cards.Spades),
 					card(cards.Ace, cards.Diamonds), 
@@ -373,7 +373,7 @@ func TestHandOddsIteration_Winner(t *testing.T) {
 
 			require.NoError(t, err)
 
-			weakest, err := cards.NewCombination([]cards.Card{
+			weakest, err := cards.NewDefaultCombination([]cards.Card{
 					card(cards.Ace, cards.Clubs), 
 					card(cards.Ace, cards.Spades),
 					card(cards.Ace, cards.Diamonds), 
@@ -394,7 +394,7 @@ func TestHandOddsIteration_Winner(t *testing.T) {
 
 		t.Run("AAKK8 vs AAAKK8 vs AAKK7", func(t *testing.T) {
 
-			strongest, err := cards.NewCombination([]cards.Card{
+			strongest, err := cards.NewDefaultCombination([]cards.Card{
 					card(cards.Ace, cards.Clubs), 
 					card(cards.Ace, cards.Spades),
 					card(cards.King, cards.Diamonds), 
@@ -405,7 +405,7 @@ func TestHandOddsIteration_Winner(t *testing.T) {
 
 			require.NoError(t, err)
 
-			weakest, err := cards.NewCombination([]cards.Card{
+			weakest, err := cards.NewDefaultCombination([]cards.Card{
 					card(cards.Ace, cards.Clubs), 
 					card(cards.Ace, cards.Spades),
 					card(cards.King, cards.Diamonds), 
@@ -415,7 +415,7 @@ func TestHandOddsIteration_Winner(t *testing.T) {
 			)
 			require.NoError(t, err)
 
-			tie, err := cards.NewCombination([]cards.Card{
+			tie, err := cards.NewDefaultCombination([]cards.Card{
 					card(cards.Ace, cards.Clubs), 
 					card(cards.Ace, cards.Spades),
 					card(cards.King, cards.Diamonds), 

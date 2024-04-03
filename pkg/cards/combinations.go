@@ -49,6 +49,7 @@ func comparedByKickers(ctype CombinationType) bool {
 type Combination struct {
 	cards []Card
 	combinationStrengths []CombinationType
+	shortDeck bool
 }
 
 func (r Combination) AllCards() []Card {
@@ -191,7 +192,7 @@ func (r Combination) isStraight() bool {
 
 	containsAce := lo.Contains(faces, Ace)
 	if containsAce {
-		return isStraightWithAce(r.cards)
+		return isStraightWithAce(r.cards, r.shortDeck)
 	} else {
 		return isStraightNoAce(r.cards)
 	}
@@ -201,7 +202,9 @@ func (r Combination) isStraightFlush() bool {
 	return r.isFlush() && r.isStraight()
 }
 
-func isStraightWithAce(cards []Card) bool {
+
+// TODO: there should be some elegant and generalized way to do it.
+func isStraightWithAce(cards []Card, shortDeck bool) bool {
 	sort.Sort(ByFace(cards))
 	faces := lo.Map(cards, func(card Card, index int) Face {
 		return card.Face()
@@ -209,6 +212,7 @@ func isStraightWithAce(cards []Card) bool {
 
 	containsKing := lo.Contains(faces, King)
 	containsTwo := lo.Contains(faces, Two)
+	containsSix := lo.Contains(faces, Six)
 
 	if containsKing {
 		containsQueen := lo.Contains(faces, Queen)
@@ -216,15 +220,22 @@ func isStraightWithAce(cards []Card) bool {
 		containsTen := lo.Contains(faces, Ten)
 
 		return containsQueen && containsJack && containsTen
-	} else if containsTwo {
-		containsThree := lo.Contains(faces, Three)
-		containsFour := lo.Contains(faces, Four)
-		containsFive := lo.Contains(faces, Five)
-
-		return containsThree && containsFour && containsFive
-	} else {
-		return false
+	} else if !shortDeck {
+		if containsTwo {
+			containsThree := lo.Contains(faces, Three)
+			containsFour := lo.Contains(faces, Four)
+			containsFive := lo.Contains(faces, Five)
+			return containsThree && containsFour && containsFive
+		} else {
+			if containsSix {
+				containsSeven := lo.Contains(faces, Seven)
+				containsEight := lo.Contains(faces, Eight)
+				containsNine := lo.Contains(faces, Nine)
+				return containsSeven && containsEight && containsNine
+			}
+		}
 	}
+	return false
 }
 
 func isStraightNoAce(cards []Card) bool {	
@@ -386,29 +397,29 @@ func lessByKickers(combinations []Combination) bool {
 }
 
 
-func NewCombination(cards []Card) (*Combination, error) {
-	return NewCombinationWithCombinationStrength(cards, DefaultCombinationStrength)
+func NewDefaultCombination(cards []Card) (*Combination, error) {
+	return NewCombination(cards, DefaultCombinationStrength, false)
 }
 
 func NewShortDeckCombination(cards []Card) (*Combination, error) {
-	return NewCombinationWithCombinationStrength(cards, ShortDeckCombinationStrength)
+	return NewCombination(cards, ShortDeckCombinationStrength, true)
 }
 
-func NewCombinationWithCombinationStrength(cards []Card, combinationStrengths []CombinationType) (*Combination, error) {
+func NewCombination(cards []Card, combinationStrengths []CombinationType, shortDeck bool) (*Combination, error) {
 	sort.Sort(ByFace(cards))
 	if len(cards) == validCardsLength {
 		uniques := lo.Uniq(cards)
 		if len(uniques) != validCardsLength {
 			return nil, errors.New("cannot construct combination with not unique cards")
 		}
-		return &Combination{cards: cards, combinationStrengths: combinationStrengths}, nil
+		return &Combination{cards: cards, combinationStrengths: combinationStrengths, shortDeck: shortDeck}, nil
 	} else {
 		return nil, fmt.Errorf("cannot construct a combination you must pass slice of size: %d", validCardsLength)
 	}
 }
 
 
-func CombinationsOf(cards[] Card) ([]Combination, error) {
+func CombinationsOf(cards[] Card, combinationStrengths []CombinationType, shortDeck bool) ([]Combination, error) {
 	if len(cards) < validCardsLength {
 		return nil, fmt.Errorf("Cannot construct combinations from {%d} cards, must be more than 5", len(cards))
 	}
@@ -425,7 +436,8 @@ func CombinationsOf(cards[] Card) ([]Combination, error) {
 			return cards[value]
 		})
 		
-		combination, err := NewCombination(toCards)
+		combination, err := NewCombination(toCards, combinationStrengths, shortDeck)
+
 		if err != nil {
 			return nil, err
 		}
@@ -437,8 +449,8 @@ func CombinationsOf(cards[] Card) ([]Combination, error) {
 	return combinations, nil
 }
 
-func StrongestCombinationOf(cards []Card) (*Combination, error) {
-	combinations, err := CombinationsOf(cards)
+func StrongestCombinationOf(cards []Card, combinationStrengths []CombinationType, shortDeck bool) (*Combination, error) {
+	combinations, err := CombinationsOf(cards, combinationStrengths, shortDeck)
 	if err != nil {
 		return nil, err
 	}

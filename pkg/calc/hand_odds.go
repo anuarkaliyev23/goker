@@ -264,18 +264,29 @@ func drawCommunityCards(deck cards.Deck, board []cards.Card, maxCommunityCards i
 	return deck, drawnCards
 }
 
-func strongestHandCombination(hand []cards.Card, board []cards.Card, extraCommunityCards []cards.Card) cards.Combination {
+func strongestHandCombination(hand []cards.Card, board []cards.Card, extraCommunityCards []cards.Card, gameConfig game.Config) cards.Combination {
 	usedCards := []cards.Card{}
 	usedCards = append(usedCards, hand...)
 	usedCards = append(usedCards, board...)
 	usedCards = append(usedCards, extraCommunityCards...)
+	
+	shortDeck := gameConfig.Game == game.ShortDeck
 
-	combination, err := cards.StrongestCombinationOf(usedCards)
-	if err != nil {
-		//This should never happen
-		panic(err)
+	if shortDeck {
+		combination, err := cards.StrongestCombinationOf(usedCards, cards.ShortDeckCombinationStrength, true)
+		if err != nil {
+			//This should never happen
+			panic(err)
+		}
+		return *combination
+	} else {
+		combination, err := cards.StrongestCombinationOf(usedCards, cards.DefaultCombinationStrength, false)
+		if err != nil {
+			//This should never happen
+			panic(err)
+		}
+		return *combination
 	}
-	return *combination
 }
 
 func iterate(hands [][]cards.Card, board []cards.Card, gameConfig game.Config) (*HandOddsIteration, error) {
@@ -293,7 +304,7 @@ func iterate(hands [][]cards.Card, board []cards.Card, gameConfig game.Config) (
 
 	
 	combinations := lo.Map(hands, func(cs []cards.Card, _ int) cards.Combination {
-		return strongestHandCombination(cs, board, extraCommunityCards)
+		return strongestHandCombination(cs, board, extraCommunityCards, gameConfig)
 	})
 
 	iteration := HandOddsIteration {
