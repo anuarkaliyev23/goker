@@ -65,6 +65,8 @@ Features:
 
 ### Build
 
+#### For development purposes
+
 ```
 make build
 ```
@@ -75,4 +77,22 @@ This command produces binary to root project folder and can be locally executed 
 ./goker hand-odds --hands KsTh,8d7d --board KdTsTd2d -i 1000 --texas
 ```
 
+#### Multiplatform
+
+```shell
+make build-multiplatform
+```
+
+Supported Platforms:
+
+- darwin/amd64 
+- darwin/arm64 
+- freebsd/amd64 
+- freebsd/arm 
+- linux/amd64 
+- linux/arm 
+- linux/arm64 
+- windows/amd64
+
+To add new platform please refer to [build script](./build.sh)
 
