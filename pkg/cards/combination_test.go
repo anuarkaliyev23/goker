@@ -378,7 +378,7 @@ func TestNewCombinations(t *testing.T) {
 			{face: Two, suit: Spades},
 		}
 
-		combination, err := NewCombination(cards)
+		combination, err := NewDefaultCombination(cards)
 		require.Nil(t, combination)
 		require.NotNil(t, err)
 	})
@@ -391,7 +391,7 @@ func TestNewCombinations(t *testing.T) {
 			{face: Two, suit: Hearts},
 		}
 
-		combination, err := NewCombination(cards)
+		combination, err := NewDefaultCombination(cards)
 		require.Nil(t, combination)
 		require.NotNil(t, err)
 	})
@@ -405,7 +405,7 @@ func TestNewCombinations(t *testing.T) {
 			{face: Ten, suit: Spades},
 		}
 
-		combination, err := NewCombination(cards)
+		combination, err := NewDefaultCombination(cards)
 		require.NotNil(t, combination)
 		require.NoError(t, err)
 	})
@@ -421,7 +421,7 @@ func TestCombination_isStraiht(t *testing.T) {
 			{face: Four, suit: Spades},
 		}
 
-		combination, err := NewCombination(cards)
+		combination, err := NewDefaultCombination(cards)
 		require.NoError(t, err)
 		require.True(t, combination.isStraight())
 	})
@@ -435,7 +435,7 @@ func TestCombination_isStraiht(t *testing.T) {
 			{face: Ten, suit: Spades},
 		}
 
-		combination, err := NewCombination(cards)
+		combination, err := NewDefaultCombination(cards)
 		require.NoError(t, err)
 		require.True(t, combination.isStraight())
 	})
@@ -449,7 +449,7 @@ func TestCombination_isStraiht(t *testing.T) {
 			{face: Five, suit: Spades},
 		}
 
-		combination, err := NewCombination(cards)
+		combination, err := NewDefaultCombination(cards)
 		require.NoError(t, err)
 		require.True(t, combination.isStraight())
 	})
@@ -462,7 +462,7 @@ func TestCombination_isStraiht(t *testing.T) {
 			{face: Six, suit: Hearts},
 			{face: Seven, suit: Spades},
 		}
-		combination, err := NewCombination(cards)
+		combination, err := NewDefaultCombination(cards)
 		require.NoError(t, err)
 		require.False(t, combination.isStraight())
 	})
@@ -478,7 +478,7 @@ func TestCombination_isFlush(t *testing.T) {
 			{face: Seven, suit: Spades},
 		}
 
-		combination, err := NewCombination(cards)
+		combination, err := NewDefaultCombination(cards)
 		require.NoError(t, err)
 		require.True(t, combination.isFlush())
 	})
@@ -493,7 +493,7 @@ func TestCombination_isFlush(t *testing.T) {
 			{face: Seven, suit: Spades},
 		}
 
-		combination, err := NewCombination(cards)
+		combination, err := NewDefaultCombination(cards)
 		require.NoError(t, err)
 		require.False(t, combination.isFlush())
 	})
@@ -509,7 +509,7 @@ func TestCombination_isFourOAKind(t *testing.T) {
 			{face: Queen, suit: Spades},
 		}
 
-		combination, err := NewCombination(cards)
+		combination, err := NewDefaultCombination(cards)
 		require.NoError(t, err)
 		require.True(t, combination.isFourOfAKind())
 	})
@@ -524,7 +524,7 @@ func TestCombination_isFourOAKind(t *testing.T) {
 			{face: Queen, suit: Spades},
 		}
 
-		combination, err := NewCombination(cards)
+		combination, err := NewDefaultCombination(cards)
 		require.NoError(t, err)
 		require.False(t, combination.isFourOfAKind())
 	})
@@ -540,7 +540,7 @@ func TestCombination_isThreeOAKind(t *testing.T) {
 			{face: Queen, suit: Spades},
 		}
 
-		combination, err := NewCombination(cards)
+		combination, err := NewDefaultCombination(cards)
 		require.NoError(t, err)
 		require.True(t, combination.isThreeOfAKind())
 	})
@@ -555,7 +555,7 @@ func TestCombination_isThreeOAKind(t *testing.T) {
 			{face: Queen, suit: Spades},
 		}
 
-		combination, err := NewCombination(cards)
+		combination, err := NewDefaultCombination(cards)
 		require.NoError(t, err)
 		require.False(t, combination.isThreeOfAKind())
 	})
@@ -571,7 +571,7 @@ func TestCombination_isTwoPair(t *testing.T) {
 			{face: Queen, suit: Spades},
 		}
 
-		combination, err := NewCombination(cards)
+		combination, err := NewDefaultCombination(cards)
 		require.NoError(t, err)
 		require.True(t, combination.isTwoPair())
 	})
@@ -586,7 +586,7 @@ func TestCombination_isTwoPair(t *testing.T) {
 			{face: Queen, suit: Spades},
 		}
 
-		combination, err := NewCombination(cards)
+		combination, err := NewDefaultCombination(cards)
 		require.NoError(t, err)
 		require.False(t, combination.isTwoPair())
 	})
@@ -602,7 +602,7 @@ func TestCombination_isPair(t *testing.T) {
 			{face: Queen, suit: Spades},
 		}
 
-		combination, err := NewCombination(cards)
+		combination, err := NewDefaultCombination(cards)
 		require.NoError(t, err)
 		require.True(t, combination.isPair())
 	})
@@ -617,7 +617,7 @@ func TestCombination_isPair(t *testing.T) {
 			{face: Queen, suit: Spades},
 		}
 
-		combination, err := NewCombination(cards)
+		combination, err := NewDefaultCombination(cards)
 		require.NoError(t, err)
 		require.False(t, combination.isPair())
 	})
@@ -633,7 +633,7 @@ func TestCombination_isFullHouse(t *testing.T) {
 			{face: Five, suit: Spades},
 		}
 
-		combination, err := NewCombination(cards)
+		combination, err := NewDefaultCombination(cards)
 		require.NoError(t, err)
 		require.True(t, combination.isFullHouse())
 	})
@@ -648,7 +648,7 @@ func TestCombination_isFullHouse(t *testing.T) {
 			{face: Queen, suit: Spades},
 		}
 
-		combination, err := NewCombination(cards)
+		combination, err := NewDefaultCombination(cards)
 		require.NoError(t, err)
 		require.False(t, combination.isFullHouse())
 	})
@@ -664,7 +664,7 @@ func TestCombination_isHighCard(t *testing.T) {
 			{face: Five, suit: Spades},
 		}
 
-		combination, err := NewCombination(cards)
+		combination, err := NewDefaultCombination(cards)
 		require.NoError(t, err)
 		require.False(t, combination.isHighCard())
 	})
@@ -679,7 +679,7 @@ func TestCombination_isHighCard(t *testing.T) {
 			{face: Queen, suit: Spades},
 		}
 
-		combination, err := NewCombination(cards)
+		combination, err := NewDefaultCombination(cards)
 		require.NoError(t, err)
 		require.True(t, combination.isHighCard())
 	})
@@ -785,7 +785,7 @@ func TestCombination_Type(t *testing.T) {
 		require.Equal(t, flush.Type(), Flush)
 		require.Equal(t, fullHouse.Type(), FullHouse)
 		require.Equal(t, fourOfAKind.Type(), FourOfAKind)
-		require.Equal(t, straightFlush.Type(), StraghtFlush)
+		require.Equal(t, straightFlush.Type(), StraightFlush)
 	})
 }
 
@@ -2074,7 +2074,7 @@ func TestCombinationsPermutationsOf(t *testing.T) {
 				{face: Eight, suit: Hearts},
 			}
 
-			combinations, err := CombinationsOf(cards)
+			combinations, err := CombinationsOf(cards, DefaultCombinationStrength, false)
 			require.NoError(t, err)
 			require.Equal(t, 21, len(combinations))
 			require.Equal(t, FourOfAKind, combinations[0].Type())
@@ -2093,7 +2093,7 @@ func TestCombinationsPermutationsOf(t *testing.T) {
 				{face: Eight, suit: Spades},
 			}
 
-			combinations, err := CombinationsOf(cards)
+			combinations, err := CombinationsOf(cards, DefaultCombinationStrength, false)
 			require.NoError(t, err)
 			require.Equal(t, FourOfAKind, combinations[0].Type())
 			require.Equal(t, 6, len(combinations))
@@ -2111,7 +2111,7 @@ func TestCombinationsPermutationsOf(t *testing.T) {
 				{face: Eight, suit: Spades},
 			}
 
-			combinations, err := CombinationsOf(cards)
+			combinations, err := CombinationsOf(cards, DefaultCombinationStrength, false)
 			require.NoError(t, err)
 			require.Equal(t, FourOfAKind, combinations[0].Type())
 			require.Equal(t, 1, len(combinations))
@@ -2128,7 +2128,7 @@ func TestCombinationsPermutationsOf(t *testing.T) {
 				{face: King, suit: Clubs},
 			}
 
-			_, err := CombinationsOf(cards)
+			_, err := CombinationsOf(cards, DefaultCombinationStrength, false)
 			require.Error(t, err)
 		})
 	})
@@ -2136,41 +2136,70 @@ func TestCombinationsPermutationsOf(t *testing.T) {
 
 
 func TestStrongestCombinationOf(t *testing.T) {
-	t.Run("7 cards", func(t *testing.T) {
-		t.Run("AA23456, expected 2-6 straight", func(t *testing.T) {
-			cards := []Card {
-				{face: Ace, suit: Hearts},
-				{face: Ace, suit: Spades},
-				{face: Two, suit: Hearts},
-				{face: Three, suit: Clubs},
-				{face: Four, suit: Diamonds},
-				{face: Five, suit: Diamonds},
-				{face: Six, suit: Hearts},
+	t.Run("Texas", func(t *testing.T) {
+		t.Run("7 cards", func(t *testing.T) {
+			t.Run("AA23456, expected 2-6 straight", func(t *testing.T) {
+				cards := []Card {
+					{face: Ace, suit: Hearts},
+					{face: Ace, suit: Spades},
+					{face: Two, suit: Hearts},
+					{face: Three, suit: Clubs},
+					{face: Four, suit: Diamonds},
+					{face: Five, suit: Diamonds},
+					{face: Six, suit: Hearts},
+				}
+
+				strongest, err := StrongestCombinationOf(cards, DefaultCombinationStrength, false)
+				require.NoError(t, err)
+				require.NotNil(t, strongest)
+				require.Equal(t, Straight, strongest.Type())
+				require.Equal(t, Six, strongest.MainCard())
+			})
+
+			t.Run("AAK8754, expected flush", func(t *testing.T) {
+				cards := []Card {
+					{face: Ace, suit: Hearts},
+					{face: Ace, suit: Clubs},
+					{face: Three, suit: Clubs},
+					{face: Four, suit: Hearts},
+					{face: Five, suit: Hearts},
+					{face: Six, suit: Hearts},
+					{face: Eight, suit: Hearts},
+				}
+
+				strongest, err := StrongestCombinationOf(cards, DefaultCombinationStrength, false)
+				require.NoError(t, err)
+				require.NotNil(t, strongest)
+				require.Equal(t, Flush, strongest.Type())
+				require.Equal(t, Ace, strongest.MainCard())
+			})
+		})
+	})
+}
+
+func TestShortDeckCombinations(t *testing.T) {
+	t.Run("Short Deck Flush vs FullHouse", func(t *testing.T) {
+			more := Combination {
+				cards: []Card {
+					{face: Six, suit: Diamonds},
+					{face: King, suit: Diamonds},
+					{face: Queen, suit: Diamonds},
+					{face: Eight, suit: Diamonds},
+					{face: Jack, suit: Diamonds},
+				},
+				combinationStrengths: ShortDeckCombinationStrength,
+			}
+			less := Combination { 
+				cards: []Card {
+					{face: King, suit: Hearts},
+					{face: King, suit: Diamonds},
+					{face: King, suit: Spades},
+					{face: Seven, suit: Clubs},
+					{face: Seven, suit: Spades},
+				},
+				combinationStrengths: ShortDeckCombinationStrength,
 			}
 
-			strongest, err := StrongestCombinationOf(cards)
-			require.NoError(t, err)
-			require.NotNil(t, strongest)
-			require.Equal(t, Straight, strongest.Type())
-			require.Equal(t, Six, strongest.MainCard())
-		})
-
-		t.Run("AAK8754, expected flush", func(t *testing.T) {
-			cards := []Card {
-				{face: Ace, suit: Hearts},
-				{face: Ace, suit: Clubs},
-				{face: Three, suit: Clubs},
-				{face: Four, suit: Hearts},
-				{face: Five, suit: Hearts},
-				{face: Six, suit: Hearts},
-				{face: Eight, suit: Hearts},
-			}
-
-			strongest, err := StrongestCombinationOf(cards)
-			require.NoError(t, err)
-			require.NotNil(t, strongest)
-			require.Equal(t, Flush, strongest.Type())
-			require.Equal(t, Ace, strongest.MainCard())
-		})
+			require.True(t, less.Less(more))
 	})
 }

@@ -68,7 +68,8 @@ func NewCard(face Face, suit Suit) (*Card, error) {
 	}, nil
 }
 
-const ValidDeckSize = 52
+const FullDeckSize = 52
+const ShortDeckSize = 36
 
 type Deck struct {
 	left []Card
@@ -79,7 +80,7 @@ func (d Deck) allCards() []Card {
 	return lo.Union(d.left, d.drawn)
 }
 
-func (d Deck) size() int {
+func (d Deck) Size() int {
 	return len(d.left) + len(d.drawn);
 }
 
@@ -90,11 +91,11 @@ func (d Deck) isUnique() bool {
 }
 
 func (d Deck) isDirty() bool {
-	return isValidDeck(d) && len(d.left) != ValidDeckSize
+	return isValidDeck(d) && len(d.left) != FullDeckSize
 }
 
 func isValidDeck(d Deck) bool {
-	return d.isUnique() && d.size() == ValidDeckSize
+	return d.isUnique() && (d.Size() == FullDeckSize || d.Size() == ShortDeckSize)
 }
 
 func (d Deck) IsEmpty() bool {
@@ -175,6 +176,18 @@ func NewDeck(cards []Card) (*Deck, error) {
 func NewFullDeck() Deck {
 	cards := []Card{}
 	for _, face := range Faces {
+		for _, suit := range Suits {
+			c, _ := NewCard(face, suit)
+			cards = append(cards, *c)
+		}
+	}
+	return NewDeckWithoutValidation(cards)
+}
+
+func NewShortDeck() Deck {
+	cards := []Card{}
+	validFaces := []Face{Six, Seven, Eight, Nine, Ten, Jack, Queen, King, Ace}
+	for _, face := range validFaces{
 		for _, suit := range Suits {
 			c, _ := NewCard(face, suit)
 			cards = append(cards, *c)

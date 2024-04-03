@@ -3,24 +3,41 @@ package cmd
 import (
 	"fmt"
 
+	"github.com/anuarkaliyev23/goker/pkg/calc"
 	"github.com/anuarkaliyev23/goker/pkg/cards"
 	utils "github.com/anuarkaliyev23/goker/pkg/cmd/utils"
-	"github.com/anuarkaliyev23/goker/pkg/texas/calc"
+	"github.com/anuarkaliyev23/goker/pkg/game"
 	"github.com/fatih/color"
 	"github.com/samber/lo"
 	"github.com/spf13/cobra"
+)
+
+const (
+	TexasFlagName = "texas"
+	ShortDeckFlagName = "short-deck"
 )
 
 var boardFlag string
 var handsFlag []string
 var iterationsFlag int
 
+var texasFlag bool
+var shortDeckFlag bool
+
 var handOddsCmd = &cobra.Command{
 	Use: "hand-odds",
 	Short: "compare hand odds with optional board",
 	RunE: func(c *cobra.Command, args []string) error {
 		err, executionDuration := utils.MeasureTime(func() error {
-			handOdds, err := handOdds(boardFlag, handsFlag, iterationsFlag)
+			var gameConfig game.Config
+			
+			if texasFlag {
+				gameConfig = game.NewTexasConfig()
+			} else if shortDeckFlag {
+				gameConfig = game.NewShortDeckConfig()
+			}
+
+			handOdds, err := handOdds(boardFlag, handsFlag, iterationsFlag, gameConfig)
 			if err != nil {
 				return err
 			}
@@ -58,7 +75,7 @@ var handOddsCmd = &cobra.Command{
 	},
 }
 
-func handOdds(boardRepresentation string, handsRepresentation []string, iterations int) (*calc.HandOddsResult, error) {
+func handOdds(boardRepresentation string, handsRepresentation []string, iterations int, gameConfig game.Config) (*calc.HandOddsResult, error) {
 	boardCards, err := utils.ParseCards(boardRepresentation)
 	if err != nil {
 		return nil, err
@@ -77,6 +94,7 @@ func handOdds(boardRepresentation string, handsRepresentation []string, iteratio
 		Board: boardCards,
 		Hands: hands,
 		IterationsCount: iterations,
+		GameConfig: gameConfig,
 	}
 
 	return calc.HandOdds(handOddsConfig)
@@ -101,5 +119,11 @@ func init() {
 	handOddsCmd.Flags().StringSliceVarP(&handsFlag, "hands", "", nil, "used to pass hole/hand cards")
 	handOddsCmd.Flags().IntVarP(&iterationsFlag, "iterations", "i", 1000, "how much iterations should simulation have")
 
-	texasCmd.AddCommand(handOddsCmd)
+	handOddsCmd.Flags().BoolVar(&texasFlag, TexasFlagName, false, "flag to indicate Texas Hold'em")
+	handOddsCmd.Flags().BoolVar(&shortDeckFlag, ShortDeckFlagName, false, "flag to indicate Short-Deck")
+
+	handOddsCmd.MarkFlagsOneRequired(TexasFlagName, ShortDeckFlagName)
+	handOddsCmd.MarkFlagsMutuallyExclusive(TexasFlagName, ShortDeckFlagName)
+
+	rootCmd.AddCommand(handOddsCmd)
 }

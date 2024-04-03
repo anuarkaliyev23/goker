@@ -47,36 +47,70 @@ func TestNewCard(t *testing.T) {
 }
 
 func TestNewDeck(t *testing.T) {
-	t.Run("Full Deck", func(t *testing.T) {
-		deck := NewFullDeck()
-		assert.Equal(t, 52, len(deck.left))
-		assert.Equal(t, 0, len(deck.drawn))
-	})
+	t.Run("positive", func(t *testing.T) {
+		t.Run("Full Deck", func(t *testing.T) {
+			t.Run("Full Deck", func(t *testing.T) {
+				deck := NewFullDeck()
+				assert.Equal(t, 52, len(deck.left))
+				assert.Equal(t, 0, len(deck.drawn))
+			})
 
-	t.Run("Valid, without validation", func(t *testing.T) {
-		deck := NewDeckWithoutValidation(allCards())
-		assert.Equal(t, 52, len(deck.left))
-		assert.Equal(t, 0, len(deck.drawn))
-	})
+			t.Run("Valid, without validation", func(t *testing.T) {
+				deck := NewDeckWithoutValidation(allCards())
+				assert.Equal(t, 52, len(deck.left))
+				assert.Equal(t, 0, len(deck.drawn))
+			})
 
-	t.Run("Not valid, without validation", func(t *testing.T) {
-		deck := NewDeckWithoutValidation(allCards()[15:])
-		assert.Equal(t, 52 - 15, len(deck.left))
-		assert.Equal(t, 0, len(deck.drawn))
+			t.Run("Valid, With Validation", func(t *testing.T) {
+				deck, err := NewDeck(allCards())
+				assert.NoError(t, err)
+				assert.Equal(t, 52, len(deck.left))
+				assert.Equal(t, 0, len(deck.drawn))
+			})
+		})
+
+		t.Run("Short Deck", func(t *testing.T) {
+			t.Run("Valid Short Deck", func(t *testing.T) {
+				deck := NewShortDeck()
+				assert.Equal(t, ShortDeckSize, deck.Size())
+				cards := deck.allCards()
+				toFaces := lo.Map(cards, func(c Card, _ int) Face {
+					return c.Face()
+				})
+				require.NotContains(t, toFaces, Two)
+				require.NotContains(t, toFaces, Three)
+				require.NotContains(t, toFaces, Four)
+				require.NotContains(t, toFaces, Five)
+
+				require.Contains(t, toFaces, Six)
+				require.Contains(t, toFaces, Seven)
+				require.Contains(t, toFaces, Eight)
+				require.Contains(t, toFaces, Nine)
+				require.Contains(t, toFaces, Ten)
+				require.Contains(t, toFaces, Jack)
+				require.Contains(t, toFaces, Queen)
+				require.Contains(t, toFaces, King)
+				require.Contains(t, toFaces, Ten)
+			})
+		})
+
 	})
 	
-	t.Run("Valid, With Validation", func(t *testing.T) {
-		deck, err := NewDeck(allCards())
-		assert.NoError(t, err)
-		assert.Equal(t, 52, len(deck.left))
-		assert.Equal(t, 0, len(deck.drawn))
+	t.Run("negative", func(t *testing.T) {
+		t.Run("Not valid, without validation", func(t *testing.T) {
+			deck := NewDeckWithoutValidation(allCards()[15:])
+			assert.Equal(t, 52 - 15, len(deck.left))
+			assert.Equal(t, 0, len(deck.drawn))
+		})
+
+
+		t.Run("Invalid, fails on validation", func(t *testing.T) {
+			deck, err := NewDeck(allCards()[15:])
+			assert.Nil(t, deck)
+			assert.Error(t, err)
+		})
 	})
 
-	t.Run("Invalid, fails on validation", func(t *testing.T) {
-		deck, err := NewDeck(allCards()[15:])
-		assert.Nil(t, deck)
-		assert.Error(t, err)
-	})
 }
 
 func TestDeck_Draw(t *testing.T) {
