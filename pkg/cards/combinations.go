@@ -457,3 +457,4 @@ func StrongestCombinationOf(cards []Card, combinationStrengths []CombinationType
 
 	return &combinations[0], nil
 }
+

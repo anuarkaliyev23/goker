@@ -3,10 +3,12 @@ package calc
 import (
 	"errors"
 	"fmt"
+	"sort"
 
 	"github.com/anuarkaliyev23/goker/pkg/cards"
 	"github.com/anuarkaliyev23/goker/pkg/game"
 	"github.com/samber/lo"
+	"gonum.org/v1/gonum/stat/combin"
 )
 
 const CardsUsedInTexasHoldem = 7
@@ -234,17 +236,21 @@ func excludeCards(deck cards.Deck, excludedCards []cards.Card) cards.Deck {
 	return deck
 }
 
-func validateIteration(hands [][]cards.Card, board []cards.Card) error {
-	if len(hands) > ((cards.FullDeckSize - CommunityCardsCount - BurnCardsCount) / HoleCardsCount) {
-		return fmt.Errorf("Too many players {%d}", len(hands))
+func validateIteration(hands [][]cards.Card, board []cards.Card, gameConfig game.Config) error {
+	if len(hands) > gameConfig.MaxPlayers {
+		return fmt.Errorf("Too many players {%d}, should be {%d}", len(hands), gameConfig.MaxPlayers)
 	}
 
-	containedInvaludHands := lo.SomeBy(hands, func(hand []cards.Card) bool {
-		return len(hand) != HoleCardsCount
+	containedInvalidHands := lo.SomeBy(hands, func(hand []cards.Card) bool {
+		return len(hand) > gameConfig.HoleCardsCount
 	})
 
-	if containedInvaludHands {
-		return fmt.Errorf("Cannot construct iteration for hand of invalid size, should be {%d}", HoleCardsCount)
+	if len(board) > gameConfig.CommunityCardsCount {
+		return fmt.Errorf("Cannot construct iteration for board of invalid size, should be less than {%d}", gameConfig.CommunityCardsCount)
+	}
+
+	if containedInvalidHands {
+		return fmt.Errorf("Cannot construct iteration for hand of invalid size, should be less than {%d}", gameConfig.HoleCardsCount)
 	}
 
 	return nil
@@ -265,6 +271,16 @@ func drawCommunityCards(deck cards.Deck, board []cards.Card, maxCommunityCards i
 }
 
 func strongestHandCombination(hand []cards.Card, board []cards.Card, extraCommunityCards []cards.Card, gameConfig game.Config) cards.Combination {
+	if gameConfig.Game == game.ShortDeck || gameConfig.Game == game.Texas {
+		return strongestHandCombinationsDefault(hand, board, extraCommunityCards, gameConfig)
+	} else if gameConfig.Game == game.Omaha {
+		return strongestHandCombinationOmaha(hand, board, extraCommunityCards, gameConfig)
+	} else {
+		panic("Unrecognized game configuration")
+	}
+}
+
+func strongestHandCombinationsDefault(hand []cards.Card, board []cards.Card, extraCommunityCards []cards.Card, gameConfig game.Config) cards.Combination {
 	usedCards := []cards.Card{}
 	usedCards = append(usedCards, hand...)
 	usedCards = append(usedCards, board...)
@@ -289,11 +305,49 @@ func strongestHandCombination(hand []cards.Card, board []cards.Card, extraCommun
 	}
 }
 
+func strongestHandCombinationOmaha(hand []cards.Card, board []cards.Card, extraCommunityCards []cards.Card, gameConfig game.Config) cards.Combination {
+	board = append(board, extraCommunityCards...)
+
+	handCombinations := combin.Combinations(len(hand), gameConfig.HoleCardsAllowedToUseCount)
+	boardCombinations := combin.Combinations(len(board), gameConfig.CommunityCardsAllowedToUseCount)
+	
+	handCardsCombinations := mapIndexToCards(hand, handCombinations)
+	boardCardsCombinations := mapIndexToCards(board, boardCombinations)
+	
+	var combinations []cards.Combination
+
+	for _, holeCards := range handCardsCombinations {
+		for _, boardCards := range boardCardsCombinations {
+			usedCards := append(holeCards, boardCards...)
+			combination, err := cards.StrongestCombinationOf(usedCards, cards.DefaultCombinationStrength, false)
+			if err != nil {
+				//This should never happen
+				panic(err)
+			}
+			combinations = append(combinations, *combination)
+		}
+	}
+
+	sort.Sort(cards.ByCombinationReversed(combinations))
+	return combinations[0]
+}
+
+func mapIndexToCards(cs []cards.Card, combinations [][]int) [][]cards.Card {
+	var result [][]cards.Card
+	for _, v := range combinations {
+		parsed := lo.Map(v, func(cardIndex int, _ int) cards.Card {
+			return cs[cardIndex]
+		})
+		result = append(result, parsed)
+	}
+	return result
+}
+
 func iterate(hands [][]cards.Card, board []cards.Card, gameConfig game.Config) (*HandOddsIteration, error) {
 	deck := cards.NewFullDeck()
 	deck.Shuffle()
 
-	err := validateIteration(hands, board)
+	err := validateIteration(hands, board, gameConfig)
 	if err != nil {
 		return nil, err
 	}
