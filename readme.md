@@ -37,6 +37,12 @@ Ties: 0.0%
 953 ms
 ```
 
+#### Omaha 
+
+```shell
+goker hand-odds --hands KsThAcAd,8d7d5c4c --board KdTd9d2d -i 1000 --omaha
+```
+
 ## Roadmap
 
 Technical Stuff:
