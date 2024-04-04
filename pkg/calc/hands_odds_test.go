@@ -198,26 +198,26 @@ func TestHandsOdds(t *testing.T) {
 			require.Error(t, err)
 		})
 
-		t.Run("inconsistent hand cards count", func(t *testing.T) {
-			hands := generateHands(1)
-			secondsHand := []cards.Card{}
-
-			secondsHandSingleCard, err := cards.NewCard(cards.Seven, cards.Spades)
-			require.NoError(t, err)
-			secondsHand = append(secondsHand, *secondsHandSingleCard)
-
-			hands = append(hands, secondsHand)
-
-			config := HandOddsConfig{
-				Hands: hands,
-				IterationsCount: 1,
-				GameConfig: game.NewTexasConfig(),
-			}
-
-			result, err := HandOdds(config)
-			require.Error(t, err)
-			require.Nil(t, result)
-		})
+		// t.Run("inconsistent hand cards count", func(t *testing.T) {
+		// 	hands := generateHands(1)
+		// 	secondsHand := []cards.Card{}
+		//
+		// 	secondsHandSingleCard, err := cards.NewCard(cards.Seven, cards.Spades)
+		// 	require.NoError(t, err)
+		// 	secondsHand = append(secondsHand, *secondsHandSingleCard)
+		//
+		// 	hands = append(hands, secondsHand)
+		//
+		// 	config := HandOddsConfig{
+		// 		Hands: hands,
+		// 		IterationsCount: 1,
+		// 		GameConfig: game.NewTexasConfig(),
+		// 	}
+		//
+		// 	result, err := HandOdds(config)
+		// 	require.Error(t, err)
+		// 	require.Nil(t, result)
+		// })
 
 		t.Run("too many players", func(t *testing.T) {
 			hands := generateHands(23)

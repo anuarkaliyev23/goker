@@ -15,6 +15,7 @@ import (
 const (
 	TexasFlagName = "texas"
 	ShortDeckFlagName = "short-deck"
+	OmahaFlagName = "omaha"
 )
 
 var boardFlag string
@@ -23,6 +24,7 @@ var iterationsFlag int
 
 var texasFlag bool
 var shortDeckFlag bool
+var omahaFlag bool
 
 var handOddsCmd = &cobra.Command{
 	Use: "hand-odds",
@@ -35,6 +37,8 @@ var handOddsCmd = &cobra.Command{
 				gameConfig = game.NewTexasConfig()
 			} else if shortDeckFlag {
 				gameConfig = game.NewShortDeckConfig()
+			} else if omahaFlag {
+				gameConfig = game.NewOmahaConfig()
 			}
 
 			handOdds, err := handOdds(boardFlag, handsFlag, iterationsFlag, gameConfig)
@@ -121,9 +125,10 @@ func init() {
 
 	handOddsCmd.Flags().BoolVar(&texasFlag, TexasFlagName, false, "flag to indicate Texas Hold'em")
 	handOddsCmd.Flags().BoolVar(&shortDeckFlag, ShortDeckFlagName, false, "flag to indicate Short-Deck")
+	handOddsCmd.Flags().BoolVar(&omahaFlag, OmahaFlagName, false, "flag to indicate Omaha")
 
-	handOddsCmd.MarkFlagsOneRequired(TexasFlagName, ShortDeckFlagName)
-	handOddsCmd.MarkFlagsMutuallyExclusive(TexasFlagName, ShortDeckFlagName)
+	handOddsCmd.MarkFlagsOneRequired(TexasFlagName, ShortDeckFlagName, OmahaFlagName)
+	handOddsCmd.MarkFlagsMutuallyExclusive(TexasFlagName, ShortDeckFlagName, OmahaFlagName)
 
 	rootCmd.AddCommand(handOddsCmd)
 }
