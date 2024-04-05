@@ -27,4 +27,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
         with:
           title:  ${{ github.head_ref }}.${{ github.sha }}
-          workdir: bin/
+          workdir: bin
