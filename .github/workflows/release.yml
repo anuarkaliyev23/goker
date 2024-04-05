@@ -1,11 +1,14 @@
 name: Create GH release
 
 on:
-  pull_request:
-    types:
-      - closed
+  # pull_request:
+  #   types:
+  #     - closed
+  #   branches:
+  #     - 'main'
+  push:
     branches:
-      - 'main'
+      - "issue-#10"
 
 jobs:
   if_merged:
