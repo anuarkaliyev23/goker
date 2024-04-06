@@ -37,7 +37,7 @@ jobs:
         with:
           token: ${{ secrets.RELEASE_TOKEN }}
           name: $VERSION
-          tag_name: ${{tag.outputs.tag}}
+          tag_name: ${{ steps.tag.outputs.tag }}
           files: |
             bin/goker-darwin-amd64
             bin/goker-darwin-arm64
