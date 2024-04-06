@@ -24,10 +24,13 @@ jobs:
 
       - name: "Build multiplatform"
         run: make build-multiplatform
+
+      - name: "cd into directory"
+        run: cd bin
+
       - name: Create a Release
         uses: elgohr/Github-Release-Action@v5
         env:
           GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
         with:
-          title:  ${{ github.head_ref }}.${{ github.sha }}
-          workdir: bin
+          title: ${{ github.sha }}
