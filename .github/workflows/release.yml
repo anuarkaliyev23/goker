@@ -23,28 +23,14 @@ jobs:
         uses: actions/setup-go@v4
         with:
           go-version: '1.21'
-  Build:
-    needs: Setup
-    runs-on: ubuntu-latest
-    steps:
       - name: "Build multiplatform"
         run: make build-multiplatform
-  Tag:
-    needs: Build
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    steps:
       - name: Tag
         uses: anothrNick/github-tag-action@v1
         env: 
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           WITH_V: false
           DEFAULT_BUMP: minor
-  Release:
-    needs: Tag
-    runs-on: ubuntu-latest
-    steps:
       - name: Create a Release
         uses: softprops/action-gh-release@v2
         with:
