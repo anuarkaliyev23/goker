@@ -25,10 +25,12 @@ jobs:
       - name: "Build multiplatform"
         run: make build-multiplatform
 
-      - name: Set Variables
-        run: |
-          VERSION=$(cat VERSION)
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
+      - name: Tag
+        uses: anothrNick/github-tag-action@v1
+        env: 
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          WITH_V: false
+          DEFAULT_BUMP: minor
 
       - name: Create a Release
         uses: softprops/action-gh-release@v2
