@@ -7,7 +7,21 @@ This tool took heavy inspiration from [poker-odds](https://github.com/CookPete/p
 
 ## Installation
 
-At this moment it can only be built from sources. See [build notes](#Build)
+### Download Release
+
+Every merge to `main` branch creates release accessible from GH page
+
+This repo follows semantic versioning. By default it bumps version by `minor` release.
+To change this behaviour you can pass these strings in your message
+
+- `#none`
+- `#patch`
+- `#minor`
+- `#major`
+
+### Build from sources
+
+See [build notes](#Build)
 
 ### Hand Odds calculation
 
@@ -41,6 +55,13 @@ Ties: 0.0%
 
 ```shell
 goker hand-odds --hands KsThAcAd,8d7d5c4c --board KdTd9d2d -i 1000 --omaha
+```
+
+```
+[KsThAcAd]: 10.7%
+[8d7d5c4c]: 89.3%
+Ties: 0.0%
+4737 ms
 ```
 
 ## Roadmap
