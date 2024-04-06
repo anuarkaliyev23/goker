@@ -26,6 +26,7 @@ jobs:
       - name: "Build multiplatform"
         run: make build-multiplatform
       - name: Tag
+        id: tag
         uses: anothrNick/github-tag-action@v1
         env: 
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -36,6 +37,7 @@ jobs:
         with:
           token: ${{ secrets.RELEASE_TOKEN }}
           name: $VERSION
+          tag_name: ${{tag.outputs.tag}}
           files: |
             bin/goker-darwin-amd64
             bin/goker-darwin-arm64
