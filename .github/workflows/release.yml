@@ -25,11 +25,17 @@ jobs:
       - name: "Build multiplatform"
         run: make build-multiplatform
 
+      - name: Set Variables
+        run: |
+          VERSION=$(cat VERSION)
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
       - name: Create a Release
         uses: softprops/action-gh-release@v2
         with:
           title: ${{ github.sha }}
           token: ${{ secrets.RELEASE_TOKEN }}
+          name: $VERSION
           files: |
             bin/goker-darwin-amd64
             bin/goker-darwin-arm64
