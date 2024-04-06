@@ -30,9 +30,6 @@ jobs:
           VERSION=$(cat VERSION)
           echo "VERSION=$VERSION" >> $GITHUB_ENV
 
-      - name: Make tag
-        run: make tag
-
       - name: Create a Release
         uses: softprops/action-gh-release@v2
         with:
